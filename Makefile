@@ -6,5 +6,5 @@ clean:
 diginorm.pdf: diginorm.tex
 	pdflatex diginorm
 #	bibtex diginorm
-#	pdflatex diginorm
+	pdflatex diginorm
 #	pdflatex diginorm

@@ -104,7 +104,7 @@ single-cell genomes, and metagenomes have also emerged.  Despite these
 advances, algorithms and compute capacity continue to be challenged by
 the continuing improvements in sequencing strategies.
 \\
-{\bf Methodology and Principal Findings:} We develop an approach termed
+{\bf Methodology and Principal Findings:} We describe an approach we call
 digital normalization, a single-pass computational algorithm that
 reduces sampling variation and eliminates the majority of sequencing
 errors from deep sequencing data. Digital normalization substantially
@@ -138,7 +138,7 @@ There are two basic challenges to dealing with short-read sequences
 from shotgun sequencing. The first is that deep sequencing is needed
 for thorough sampling. This is because shotgun sequencing samples
 randomly, and always from a distribution biased by sample content,
-sample preparation and sequencing technology.  For this reasonq, a
+sample preparation and sequencing technology.  For this reason, a
 human genome may require 100x coverage or more for near-complete
 sampling, leading to 300 gigabase+ data sets; transcriptomes and
 metagenomes, for which the source molecules have an uneven
@@ -245,7 +245,8 @@ errors.
 We can therefore use the median k-mer abundance of a read, measured
 across the entire read data set, as an estimator of sampling depth for
 the region represented by the read -- as long as the genome is
-non-repetitive.  Do we actually observe this?  In Figure 1a, we show
+non-repetitive.  Do we actually observe this?  In Figure \ref{fig:random},
+we show
 that for simulated 100-base reads from an artificial (non-repetitive
 genome) of 1 mb, sampled with a 1\% per-base error rate, the median
 20-mer abundance matches both the true coverage and the estimated
@@ -260,7 +261,7 @@ to all matching locations.)
 
 This same correlation also holds for reads sampled from a non-uniform
 distribution, e.g. for mRNAseq expression assays or metagenomics.
-Figure 2a shows that median k-mer abundance and number of mapped reads
+Figure \ref{fig:transcripts} shows that median k-mer abundance and number of mapped reads
 correlate for a simulated transcriptome with expression across 3
 orders of magnitude, while Figure 2b shows the same strong correlation
 for a mouse mRNAseq data set.
@@ -307,22 +308,22 @@ reads are both saved and incorporated into the k-mer count database.
 Algorithmically, we execute the following procedure, which we term
 digital normalization:
 
-\[
+\begin{verbatim}
    for read in dataset:
       if estimated_coverage(read) < C:
          accept(read)
       else:
          discard(read)
-\]
+\end{verbatim}
 
-where accepted reads contribute to the estimated coverage.  For any
+where only accepted reads contribute to the estimated coverage.  For any
 data set, this has the effect of discarding the majority of reads that
-contribute to coverage > C, although some later reads will be accepted
+contribute to coverage $>$ C, although some later reads will be accepted
 that push the estimated coverage of earlier reads above C.  Reads from
-undersampled regions, or containing many distinct errors, will always
+undersampled regions, or those containing many distinct errors, will always
 be accepted and retained.
 
-In Figure 3, we display the estimated coverage of a simulated genome
+In Figure 3@@, we display the estimated coverage of a simulated genome
 and an E. coli genome for both raw and normalized data, using both
 median k-mer abundance and read multimapping.  From this, we see that
 digitally normalizing both simulated and real high-coverage data has
@@ -338,20 +339,20 @@ errors?
 
 A significant problem with next-generation sequencing is that there
 are relatively high per-base error rates, approaching 1-2\%.  These
-errors strongly affect the total number of k-mers; for example, in
-simulated genomic data of 100x, a 1\% error rate leads to 100-fold
-more 20-mers in the reads than are truly present in the genome.  This
-in turn dramatically increases the memory requirements for tracking
-and correcting k-mers (cite bloom filter paper).
+errors strongly affect the total number of k-mers; for example, in the
+simulated genomic data of 100x, a 1\% error rate leads to more than
+3-fold more 20-mers in the reads than are truly present in the genome.
+This in turn dramatically increases the memory requirements for
+tracking and correcting k-mers (cite bloom filter paper).
 
 When we perform digital normalization on such a data set, we eliminate
 the vast majority of these k-mers (Table 1).  Intuitively, this is
 because we are accepting or rejecting individual reads; in going from
 100x random coverage to 20x systematic coverage, we are discarding
-80\% of the reads as well as 80\% of the errors (first row, Table 1).
+80\% of the reads with 62\% of the errors (first row, Table \ref{tab:normC20}).
 For reads taken from a biased abundance distribution, such as with
-mRNAseq, we discard many more reads, and hence many more errors.
-Conveniently, in doing so we retain essentially all real k-mers.
+mRNAseq, we also discard many reads, and hence many errors.
+Conveniently, in doing so we retain nearly all real k-mers.
 
 During the initial data set reduction we also count the k-mers in the
 accepted reads.  With this information we can execute a second pass
@@ -359,8 +360,8 @@ across the accepted reads in which we trim reads at low-abundance
 k-mers, thus removing another set of likely errors.  Following this
 second pass error reduction, we may also execute a second round of
 digital normalization that further eliminates redundant data; this
-three-pass protocol eliminates some additional errors, but virtually
-no real k-mers (Table 2).
+three-pass protocol eliminates some additional errors, at the cost
+of very few real k-mers (Table \ref{tab:normC5}).
 
 \subsection*{Digital normalization can be used prior to de novo assembly}
 
@@ -373,7 +374,6 @@ assemblies to the known reference, if available.  In all cases with
 a reference, digital normalization discarded well over 90\% of the
 reads as redundant, while the resulting assemblies were over 95\%
 identical to the known reference.
-
 
 (further discussion of results)
 
@@ -545,30 +545,62 @@ Chris Hart, James M. Tiedje, USDA, NSF.
 \bibliography{template}
 
 \section*{Figure Legends}
-%\begin{figure}[!ht]
-%\begin{center}
-%%\includegraphics[width=4in]{figure_name.2.eps}
-%\end{center}
-%\caption{
-%{\bf Bold the first sentence.}  Rest of figure 2  caption.  Caption 
-%should be left justified, as specified by the options to the caption 
-%package.
-%}
-%\label{Figure_label}
-%\end{figure}
+\begin{figure}[!ht]
+\begin{center}
+\includegraphics[width=4in]{diginorm-fig1a.pdf}
+\end{center}
+\caption{
+{\bf Mapping and k-mer coverage measures correlate for uniform sampling.}
+XXX
+}
+\label{fig:random}
+\end{figure}
 
+\section*{Figure Legends}
+\begin{figure}[!ht]
+\begin{center}
+\includegraphics[width=4in]{diginorm-fig2a.pdf}
+\end{center}
+\caption{
+{\bf Mapping and k-mer coverage measures correlate for biased samples.}
+XXX
+}
+\label{fig:transcripts}
+\end{figure}
 
 \section*{Tables}
-%\begin{table}[!ht]
-%\caption{
-%\bf{Table title}}
-%\begin{tabular}{|c|c|c|}
-%table information
-%\end{tabular}
-%\begin{flushleft}Table caption
-%\end{flushleft}
-%\label{tab:label}
-% \end{table}
+
+\begin{table}[!ht]
+\caption{
+\bf{Digital normalization to C=20 removes erroneous k-mers}}
+\begin{tabular}{|l|c|c|c|c|}
+Data set & True 20-mers & 20-mers in reads & 20-mers at C=20 & \% reads kept\\
+\hline \\
+Simulated genome & 399,981 & 8,162,813 & 3,052,007 (-2) & 19\% \\
+Simulated mRNAseq & 48,100 & 2,466,638 (-88) & 1,087,916 (-9) & 4.1\% \\
+{\em E. coli} genome & XXX & YYY & ZZZ & 11\% \\
+Mouse mRNAseq & XXX & YYY & ZZZ & 28\% \\
+\end{tabular}
+\begin{flushleft} XXX
+\end{flushleft}
+\label{tab:normC20}
+\end{table}
+
+\begin{table}[!ht]
+\caption{
+\bf{Three-pass digital normalization removes most erroneous k-mers}}
+\begin{tabular}{|l|c|c|c|c|}
+Data set & True 20-mers & 20-mers in reads & 20-mers remaining & \% reads kept\\
+\hline \\
+Simulated genome & 399,981 & 8,162,813 & 453,588 (-4) & 5\% \\
+Simulated mRNAseq & 48,100 & 2,466,638 (-88) & 182,855 (-351) & 1.2\% \\
+{\em E. coli} genome & XXX & YYY & ZZZ & 2.1\% \\
+Mouse mRNAseq & XXX & YYY & ZZZ & AA\% \\
+\end{tabular}
+\begin{flushleft} XXX
+\end{flushleft}
+\label{tab:normC5}
+\end{table}
 
 \end{document}
 
