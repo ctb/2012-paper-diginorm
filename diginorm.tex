@@ -8,7 +8,7 @@
 % latex plos.template
 % dvipdf plos.template
 
-\documentclass[10pt]{article}
+\documentclass[10pt,draft]{article}
 
 % amsmath package, useful for mathematical formulas
 \usepackage{amsmath}
@@ -84,6 +84,7 @@ Timothy H. Brom$^{3}$
 \bf{3} Department of Computer Science and Engineering, Michigan State University, East Lansing, MI, USA
 \\
 {\bf{4} USDA Avian Disease and Oncology Laboratory, East Lansing, MI, USA}
+\\
 $\ast$ E-mail: Corresponding ctb@msu.edu
 \end{flushleft}
 
@@ -91,7 +92,7 @@ $\ast$ E-mail: Corresponding ctb@msu.edu
 \section*{Abstract}
 
 {\bf Background:} Deep shotgun sequencing and analysis of genomes,
-transcriptomes, amplified single-cell genomes, and metagenomes enables
+transcriptomes, amplified single-cell genomes, and metagenomes enable
 the sensitive investigation of a wide range of biological
 phenomena. However, it is difficult to deal with the volume of data
 emerging from deep short-read sequencers, in part because of random
@@ -102,21 +103,24 @@ novo assemblers such as ABySS, Velvet, SOAPdenovo, ALL-PATHS, and SGA.
 Even newer assembly strategies for dealing with transcriptomes,
 single-cell genomes, and metagenomes have also emerged.  Despite these
 advances, algorithms and compute capacity continue to be challenged by
-the continuing improvements in sequencing strategies.
+the continuing improvements in sequencing technology.
+\\
 \\
 {\bf Methodology and Principal Findings:} We describe an approach we call
 digital normalization, a single-pass computational algorithm that
 reduces sampling variation and eliminates the majority of sequencing
 errors from deep sequencing data. Digital normalization substantially
 reduces the size of the data set and decreases the memory and time
-requirements for de novo sequence assembly without significantly
-impacting content of the generated contigs.
+requirements for {\em de novo} sequence assembly without significantly
+impacting content of the generated contigs.  Moreover, for at least
+one single-cell data set, the post-normalization assembly exhibits a significant improvement in contiguity over previous best methods.
 \\
-{\bf Conclusions and Significance:} The digital normalization approach leads
-to systematic data size and error reduction and can be used prior to
-de novo sequence assembly. We demonstrate its applicability to the
-assembly of microbial genomes, single-cell genomic data, and
-transcriptomic data.
+\\
+{\bf Conclusions and Significance:} The digital normalization approach
+yields a systematic reduction in data size and errors, and can be used
+effectively prior to {\em de novo} sequence assembly.  We demonstrate its
+applicability to the assembly of microbial genomes, single-cell
+genomic data, and transcriptomic data.
 
 % Please keep the Author Summary between 150 and 200 words
 % Use first person. PLoS ONE authors please skip this step. 
