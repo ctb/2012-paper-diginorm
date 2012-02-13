@@ -66,8 +66,8 @@
 % Title must be 150 characters or less
 \begin{flushleft}
 {\Large
-\textbf{Digital normalization of short shotgun sequences reduces data size
-and removes errors}
+\textbf{Digital Normalization of Short Shotgun Sequences Facilitates
+{\em de novo} Sequence Assembly}
 }
 % Insert Author names, affiliations and corresponding author email.
 \\
@@ -117,8 +117,8 @@ one single-cell data set, the post-normalization assembly exhibits a significant
 \\
 \\
 {\bf Conclusions and Significance:} The digital normalization approach
-yields a systematic reduction in data size and errors, and can be used
-effectively prior to {\em de novo} sequence assembly.  We demonstrate its
+systematically reduces data set size and removes errors prior to {\em
+de novo} sequence assembly.  We demonstrate its
 applicability to the assembly of microbial genomes, single-cell
 genomic data, and transcriptomic data.
 
@@ -132,7 +132,7 @@ genomic data, and transcriptomic data.
 The ongoing revolution in DNA sequencing technologies has led to a new
 problem: how do we analyze the resulting very large sequence data sets
 quickly and efficiently? These data sets contain millions to billions
-of short reads, often with high error rates and substantial sampling
+of short reads, and have high error rates and substantial sampling
 biases. In particular, the widespread use of deep shotgun sequencing
 on previously unsequenced genomes, transcriptomes, and metagenomes has
 led to vast quantities of high-coverage sequencing data that requires
@@ -144,9 +144,9 @@ for thorough sampling. This is because shotgun sequencing samples
 randomly, and always from a distribution biased by sample content,
 sample preparation and sequencing technology.  For this reason, a
 human genome may require 100x coverage or more for near-complete
-sampling, leading to 300 gigabase+ data sets; transcriptomes and
-metagenomes, for which the source molecules have an uneven
-distribution, may require similarly deep sequencing for complete
+sampling, leading to 300 gigabase+ data sets.  Since sampling depth
+follows the prevalence of the lowest abundance molecule, transcriptomes and
+metagenomes also require similarly deep sequencing for complete
 sampling of rare molecules. This leads to extremely large amounts of
 data, much of it redundant.
 
@@ -533,6 +533,9 @@ stress preprocessing; attacks de Bruijn principles.
 
 ht size scales with original genome size
 
+show graph of accumulation of reads and errors for simulated data set
+
+show graph of read/kmer rank abundance
 
 % You may title this section "Methods" or "Models". 
 % "Models" is not a valid title for PLoS ONE authors. However, PLoS ONE
