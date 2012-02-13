@@ -414,11 +414,13 @@ data set covered the full Trinity assembly.  We found that all but
 normalized assembly.  Furthermore, all of the lost k-mers were at the
 ends of the reconstructed transcripts, suggesting that the
 end-sampling bias observed with the simulated data (above) was the
-source of the loss.  Thus we believe that the main source of the
-negative effect digital normalization had on the Trinity assembly was
-on the algorithms used for determining likely transcripts.
+source of the loss.  Together with the Oases results, this suggests
+that there is no inherent and substantial loss of informative k-mers
+because of digital normalization.  This implies that digital
+normalization is primarily affecting the algorithm that Trinity uses
+to determine which reads to assemble into transcripts.
 
-% @CTB change k value argument?
+% @CTB change-k-value argument?
 
 \section*{Discussion}
 
@@ -427,32 +429,33 @@ on the algorithms used for determining likely transcripts.
 \subsection*{Digital normalization is an effective method of data reduction}
 
 Digital normalization is a simple, lightweight computational technique
-for removing redundant data from shotgun sequencing data sets.  It is
-similar to experimental normalization, which has been applied to both
-mRNA and single-cell amplified genomes, but is applied after
-sequencing.  While there is one disadvantage -- deep sequencing must
-be done to sample rare molecules -- this approach confers several
-advantages, including the ability to estimate source molecule abundances by
-using the unnormalized reads.
+for removing redundant data from shotgun sequencing data sets.
+Digital normalization is similar in concept to experimental
+normalization, which has been applied to both mRNA and single-cell
+amplified genomes, but it is applied after sequencing.  In contrast to
+experimental normalization, digital normalization still requires deep
+sequencing to sample rare molecules; however, digital normalization
+confers several advantages over experimental normalization, including
+the ability to estimate source molecule abundances by using the
+unnormalized reads.
 
 Digital normalization uses a reference-independent estimator of
 coverage, so it can be applied de novo to any data set.  The approach
 is extremely computationally convenient: the runtime complexity is
 linear with respect to the data size, and perhaps more importantly it
-is {\em single-pass}: the algorithm does not need to look at any read
-more than once.  Moreover, because reads are accumulated sub-linearly
-with over any deep data set, likely errors also do not accumulate
-linearly, and the overall memory usage is consequently limited.
-Combined, these features let us adopt a streaming approach to the data
-reduction of extremely large data sets, with all of the advantages of
-treating sequence as a data stream (@@).
+is potentially {\em single-pass}: the algorithm does not need to look
+at any read more than once.  Moreover, because reads are accumulated
+sub-linearly, many errors are removed and overall memory usage is
+consequently limited.  Combined, these features enable a streaming
+approach to the data reduction of extremely large data sets, with all
+of the advantages of treating sequence as a data stream (@@).
 
 \subsection*{Digital normalization dramatically scales de novo assembly}
 
 The results from applying digital normalization to read data sets
 prior to de novo assembly are extremely good: digital normalization
-can reduce data sets by more than 10 in size, without substantially
-affecting the assembly results.  Why is this?
+can reduce data sets considerably, without substantially affecting the
+assembly results.  Why is this?
 
 First, by discarding reads that do not contribute significant
 additional information, digital normalization removes the majority of
@@ -466,14 +469,17 @@ significantly to memory usage for assemblers like Velvet, so
 eliminating them reduces the memory required for assembly.
 
 Third, by converting random sampling to systematic sampling and
-normalizing the coverage, digital normalization eliminates both
-sampling bias and variation in read coverage.  This allows
-single-genome assemblers such as Velvet to be used on sequences from
-samples with biased source distributions such as mRNAseq and
-MDA-amplified genomes, as well as metagenomic samples from
-mixed-abundance populations. @@underappreciated.
+normalizing the coverage, digital normalization corrects bias in read
+coverage, including that due to sampling bias and underlying
+non-uniform molecule distributions.  This allows single-genome
+assemblers such as Velvet to be applied to sequences from samples with
+biased source distributions such as mRNAseq and MDA-amplified genomes,
+as well as metagenomic samples from mixed-abundance populations,
+without modification.
 
-\subsection*{Failure modes}
+@@underappreciated - completing assembly
+
+\subsection*{Digital normalization can fail}
 
 For what data sets would we expect this correlation between median
 k-mer abundance and "true" read coverage to break down?
@@ -542,6 +548,38 @@ short-insert libraries.
 
 The effect on isoforms is undetermined.  @@  Further work!
 
+\subsection{Digital normalization and assemblers}
+
+One concern with digital normalization is that even without any
+explicit information loss in terms of real k-mer content, digital
+normalization might adversely affect genome assembler heuristics for
+dealing with standard genomic features such as repeats.  For example,
+Velvet uses k-mer abundance to detect and resolve issues with repeat
+traversal.  Digital normalization eliminates the majority of
+repetitive k-mers and hence might drive misassembly. Our results above
+suggest that at least in microbial genomes, this does not occur
+systematically.  This might be because repeats affect assembly less in
+microbial genomes than in repeat-rich eukaryotic genomes; we are
+currently working to apply digital normalization to contig assembly in
+eukaryotic genomes, but this is future work.
+
+Our results from Trinity and Oases suggest that current transcriptome
+assemblers are either very sensitive (Trinity) or somewhat sensitive
+(Oases) to the effects of digital normalization.  It may be possible
+to recover the majority of lost transcripts by altering internal
+parameters of the Trinity algorithms, although it is likely that some
+low-prevalence isoforms are simply lost in the process of digital
+normalization (@@).  Regardless, digital normalization may provide
+a sufficiently significant advantage to consider adapting the Trinity
+and Oases algorithms to better handle normalized data.
+
+Digital normalization with k-mers may be particularly well-suited to
+preprocessing sequences before de Bruijn graph assembly.  Digital
+normalization should not significantly change the paths available in
+the de Bruijn graph.  In particular, results show that even when the
+final assemblies differ, as with Trinity, the k-mers necessary to
+reconstruct much of the assembly remain in the data set.
+
 \subsection{General thoughts}
 
 Digital normalization is an effective demonstration of the basic
@@ -559,6 +597,26 @@ estimators are easy to calculate, but sensitive to errors and
 variation.  Estimators based on local alignments may be worth
 investigating in the future.
 
+One cost of using a k-mer based approach is that k-mers are
+systematically lost at the end of sequences, because it is difficult
+to determine whether or not these novel k-mers are due to errors or
+true novelty.  While these k-mers are easy to recover post-assembly by
+partially aligning reads back to the assembly, this is an inelegant
+strategy.  There are several possible ways to address the challenge
+within the digital normalization formalism.  One potential approach is
+to incorporate alignment or graph-traversal based techniques to
+determine if putatively novel sequence extends an alignment or path.
+Another approach could be to incorporate a k-mer based error
+correction technique into the digital normalization process, and
+retain those sequences that are not correctible; this is similar in
+concept to the alignment approach.  Both these approaches would be
+more computationally expensive than the current approach.  Finally,
+recurring novelty could be preferentially retained during digital
+normalization, but this would require tracking k-mer abundances in
+removed reads and hence would be more memory intensive.
+
+\subsection{Concluding thoughts}
+
 As sequencing costs continue to drop, we confront essentially
 unlimited amounts of data that must be analyzed computationally.
 Digital normalization may provide a fast, simple way to reduce the
@@ -573,18 +631,18 @@ sensitivity.
 
 \subsection{Misc foo}
 
-Connections to compressed sensing?
+Connections to compressed sensing, loss compression.
 
 Can quantitate off of discarded data.
 
-Ref to experimental normalization
+%Ref to experimental normalization
 
-The original data set can be retained for quantification against the
-assembled data set.
+%The original data set can be retained for quantification against the
+%assembled data set.
 
-repeats, scaffolds
+%repeats, scaffolds
 
-Talk about normalization helping basic assemblers.
+%Talk about normalization helping basic assemblers.
 
 missassembly analysis/a5
 a5 refs
@@ -601,11 +659,11 @@ show graph of read/kmer rank abundance
 
 grain of sand foo.
 
-error correction and/or alignment and/or graph foo
+%error correction and/or alignment and/or graph foo
 
 track memory, time
 
-
+longer sequences
 
 % You may title this section "Methods" or "Models". 
 % "Models" is not a valid title for PLoS ONE authors. However, PLoS ONE
@@ -615,7 +673,7 @@ track memory, time
 % Do NOT remove this, even if you are not including acknowledgments
 \section*{Acknowledgments}
 
-Chris Hart, James M. Tiedje, USDA, NSF.
+Chris Hart, James M. Tiedje, USDA, NSF, Brian Haas.
 
 %\section*{References}
 % The bibtex filename
