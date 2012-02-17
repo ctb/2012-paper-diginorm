@@ -133,7 +133,7 @@ The ongoing revolution in DNA sequencing technologies has led to a new
 problem: how do we analyze the resulting very large sequence data sets
 quickly and efficiently? These data sets contain millions to billions
 of short reads, and have high error rates and substantial sampling
-biases.  The vast quantities of high-coverage sequencing data that
+biases.  The vast quantities of deep sequencing data that
 these new sequencing technologies have produced are driving
 computational biology to extend previous approaches in new ways.  In
 particular, the widespread use of deep shotgun sequencing on
@@ -220,9 +220,13 @@ on a variety of simulated and real data sets.
 \subsection*{Median k-mer abundance of a read is a good estimator of coverage}
 
 Suppose that we have a file of short reads that are randomly sampled
-without error from a non-repetitive source genome.  Can we estimate
-the coverage of a source genomic region solely from the reads, without
-using a reference sequence?
+without error from a non-repetitive source genome, and we want to know
+the number of times a specific source genomic base is represented in
+the reads.  This number, known as the coverage, is typically estimated
+by assembling a reference sequence, mapping the short reads back to
+this sequence, and counting the number of times the base is covered by
+the short reads.  Can we estimate the coverage of a source genomic
+region solely from the reads, without having access to a reference?
 
 One approach to doing so is to select a read from the region of
 interest, and then apply the following procedure. First, choose a k
@@ -664,6 +668,51 @@ grain of sand foo.
 track memory, time
 
 longer sequences
+
+alexis:
+
+Some mappers pride themselves on using base quality scoring.  Might be
+necessary to say something about it and why your method doesn't use or
+doesn't need to use it.
+
+What about those groups that make mappers who try to claim that
+distributing the reads (or in this case kmers) either randomly or
+through some statistical weighting will solve the multi position read
+problem?  Might need to be mentioned even if only to throw it out.
+
+Possible fail data set: a group of isoforms that collectively have no
+unique kmers and are expressed at drastically different levels.  Might
+not even need random sampling and errors.
+
+Exon1Exon2Exon3 (10)
+Exon2Exon3                (100)
+Exon1Exon2             (1000)
+
+In the case where two regions are represented as AXXXB and CXXXD: the
+median might start getting screwy when XXX will generate more kmers
+than AXX + XXB.  Say AXX generates 50 kmers, then XXX is long enough
+to generate 101 kmers, then XXB generates 50 kmers.  The AXX and XXB
+kmers are unique to the dataset.  XXX is shared.  All unique kmers
+will be eliminated along with all but one shared kmer.
+
+Adina:
+
+They are clearly related, because even if you actually hit each region
+(say) five times or more, in a big enough genome there will be some
+unlucky region where four of the sampled reads have errors in them,
+leaving a *genuine* k-mer (one that is actually in the genome) with an
+abundance of 1. Then if we remove abund=1 k-mers, we lose true data.
+
+And if you downsample the data to an average coverage of five, and
+*then* trim, you're exacerbating this situation artificially by
+choosing only five reads to represent each region, which will then be
+more likely to have errors.
+
+If you downsample to 20, then trim, then
+downsample again to 5, you're bypassing this problem, by first doing
+relaxed data reduction, then error trimming, and then more severe data
+reduction again; basically, more scalable error trimming before the
+most severe round of data reduction.
 
 % You may title this section "Methods" or "Models". 
 % "Models" is not a valid title for PLoS ONE authors. However, PLoS ONE
