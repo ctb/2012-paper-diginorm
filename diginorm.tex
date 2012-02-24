@@ -8,7 +8,7 @@
 % latex plos.template
 % dvipdf plos.template
 
-\documentclass[10pt,draft]{article}
+\documentclass[10pt]{article}
 
 % amsmath package, useful for mathematical formulas
 \usepackage{amsmath}
@@ -241,7 +241,7 @@ the source genome for each k-mer.  We can then estimate the sampling
 rate or coverage of the region to which the read belongs by calculating a
 summary statistic such as the median or average of
 the read's k-mer abundance distribution: see Figure
-@@\ref{fig:rankabund}. This approach relies on the idea that
+\ref{fig:rankabund}. This approach relies on the idea that
 k-mers within a read will generally be correlated in their abundance
 across a data set, and the median will be robust to extreme values
 from repeats.
@@ -260,7 +260,6 @@ bases or longer, and a k-mer size of 20, the median k-mer abundance
 will be robust to a single error; for a read length of 100, and a
 k-mer size of 20, the median k-mer abundance will be robust to two
 errors.
-% @@CTB figure 1
 
 We can therefore use the median k-mer abundance of a read, measured
 across the entire read data set, as an estimator of sampling depth for
@@ -330,13 +329,14 @@ contribute to additional coverage below a certain threshold.  Digital normalizat
 random sampling} to {\em systematic sampling}.
 
 At what rate are informative sequences retained?  For the E. coli data
-set, Figure \ref{fig:accumulate} shows the rate of accumulation of
+set, Figure \ref{fig:accumulate} shows the rate of retention of
 sequences against the total number of reads examined for normalizing
-to C=20 at k=20.  There is a clear saturation effect showing that
-after XXX reads have been examined, fewer than YYY\% of new reads are
-retained.  This demonstrates that only a very small amount of novelty
-(in the form of either new information, or the accumulation of
-significant errors) is being acquired as sequencing samples more
+to C=20 at k=20.  There is a clear saturation effect showing as more
+reads are examined, a smaller fraction of reads are retained; by 5m
+reads or approximately 100x coverage of {\em E. coli}, under 30\% of
+new reads are kept.  This demonstrates that only a very small amount
+of novelty (in the form of either new information, or the accumulation
+of significant errors) is being acquired as sequencing samples more
 deeply.
 
 \subsection*{Digital normalization removes many sequencing errors}
@@ -507,9 +507,60 @@ biased source distributions such as mRNAseq and MDA-amplified genomes,
 as well as metagenomic samples from mixed-abundance populations,
 without modification.
 
-The net effect is to significantly reduce computational requirements for
-de novo assembly.  The ability to actually complete large assemblies is
-underappreciated.  {\bf STRONG STATEMENT}
+The net effect of digital normalization is to significantly reduce
+computational requirements for {\em de novo} assembly.  This is not a
+trivial consideration: as stated in Salzberg et al., ``the ability to
+actually complete assemblies is underappreciated. @@'' As data
+quantity from next-generation sequencing increases, assembly becomes
+ever more challenging; the ability to build transcriptomes and single-
+cell genomes quickly and effectively in the face of large quantities
+of data is important.  Because digital normalization converts the
+assembly problem from a computational problem that scales with the
+volume of data to a computational problem that scales with the size of
+the underlying genome or transcriptome, it provides a long-term
+solution to the problem of {\em de novo} assembly.  In particular,
+note that Oases assembly of the digitally normalized mouse
+transcriptome data can now be run in under 60 GB of RAM.  Computers
+of this size are available through rental ``cloud computing'' providers
+such as Amazon, making it possible for researchers without substantial
+compute hardware to do transcriptome assembly for non-model organisms.
+
+\subsection*{Digital normalization removes isoforms and drops terminal k-mers}
+
+@@discuss failure mode
+
+\subsection*{Conclusions and future work}
+
+Digital normalization is an effective demonstration of the basic
+observation that at most 2x coverage is required to assemble a genome
+-- it just has to be {\em systematic} coverage.  Here we have chosen
+to normalize samples to 5x, primarily to ensure $>$ 2x systematic
+coverage in the face of sequencing errors.  Normalization and assembly
+of data is significantly more computationally efficient than assembly
+of the raw reads.  Nonetheless, assembly of normalized data results in
+nearly identical assemblies for genomic data, and useful if not
+completely sensitive assemblies for transcriptomic data.
+
+The method of digital normalization described above relies on a k-mer
+based, reference-independent way of measuring the coverage of
+individual reads.  Any reference-free progressive approach to
+estimating coverage could serve; for example, an alignment-based
+approach, in which reads were progressively used to build alignments
+with error tolerance, may provide an alternative implementation that
+is less sensitive to errors.
+
+Here we have primarily tackled the problem of {\em contig assembly},
+because that is the most computationally challenging part of {\em de
+  novo} assembly.  Scaffolding, in which contigs are joined together
+based on paired-end information, is necessary for generating longer
+sequences in repeat-rich genomes.  Because of this, we have only
+examined the results of digital normalization on microbial genomes,
+which can yield good assemblies even without scaffolding.  However, in
+principle there is no reason that digital normalization cannot be
+applied to contig generation in eukaryotic genomes; this remains for
+future work.
+
+\section*{Leftover text}
 
 \subsection*{Digital normalization can fail}
 
@@ -614,58 +665,9 @@ The effect on isoforms is undetermined.  @@  Further work!
 
 @@CTB: rearrange to conclusions, future work; make brief.
 
-\subsection*{General thoughts}
-
-Digital normalization is an effective demonstration of the basic
-observation that at most 2x coverage is required to assemble a genome
--- it just has to be the {\em right} 2x coverage.  Here we have chosen
-to normalize samples to 5x, primarily to ensure $>$ 2x systematic
-coverage in the face of sequencing errors.  Assembly of normalized
-data results in nearly identical assemblies, but with a significant
-savings in the required compute time and memory.
-
-We have shown that the median k-mer abundance is a good estimator of
-coverage for some samples, but more generally any reference-free
-estimator could be used to the same end.  k-mer-abundance based
-estimators are easy to calculate, but sensitive to errors and
-variation.  Estimators based on local alignments may be worth
-investigating in the future.
-
-One cost of using a k-mer based approach is that k-mers are
-systematically lost at the end of sequences, because it is difficult
-to determine whether or not these end k-mers are due to errors or true
-novelty.  While such k-mers should be easy to recover post-assembly by
-performing a partial alignment of reads back to the assembly, this is
-an inelegant strategy.  There are several possible ways to address the
-challenge within the formalism of digital normalization.  One potential
-approach is to incorporate alignment or graph-traversal based
-techniques to determine if putatively novel sequence extends an
-alignment or path.  Another approach could be to incorporate a k-mer
-based error correction technique into the digital normalization
-process, and retain those sequences that are not correctible; this is
-similar in concept to the alignment approach.  Both these approaches
-would be more computationally expensive than the current approach.
-Finally, recurring novelty could be preferentially retained during
-digital normalization, but this would require tracking k-mer
-abundances in removed reads and hence would be more memory intensive.
-
-\subsection*{Concluding thoughts}
-
-As sequencing costs continue to drop, we confront essentially
-unlimited amounts of data that must be analyzed computationally.
-Digital normalization may provide a fast, simple way to reduce the
-total volume of data and make certain types of computation more
-tractable.  This is especially important for populations of molecules
-with strongly biased abundance distributions, for which the
-lowest-abundance molecule determines the sampling depth, such as
-mRNAseq and metagenomic samples.  Here, digital normalization will
-dramatically reduce the overall data size by filtering out data and
-noise from the over-sampled molecules, potentially increasing
-sensitivity.
-
 \subsection*{Misc foo}
 
-Connections to compressed sensing, loss compression.
+Connections to compressed sensing, loss compression prior to assembly.
 
 Can quantitate off of discarded data.
 
@@ -760,16 +762,21 @@ Chris Hart, James M. Tiedje, USDA, NSF, Brian Haas.
 % The bibtex filename
 \bibliography{template}
 
+\newpage
+
 \begin{figure}
+\includegraphics[width=4in]{diginorm-ranks.pdf}
 \caption{
-{\bf k-mer rank-abundance distribution for reads with and without errors.}}
+{\bf Representative rank-abundance distributions for k-mers from a read with no errors,
+a read with a single substitution error, and a read with multiple
+substitution errors.}}
 \label{fig:rankabund}
 \end{figure}
 
 % @@CTB \section*{Figure Legends}
 \begin{figure}[!ht]
 \begin{center}
-\includegraphics[width=4in]{diginorm-fig1a.pdf}
+%CTB\includegraphics[width=4in]{diginorm-fig1a.pdf}
 \end{center}
 \caption{
 {\bf Mapping and k-mer coverage measures correlate for uniform sampling on
@@ -783,7 +790,7 @@ XXX
 
 \begin{figure}[!ht]
 \begin{center}
-\includegraphics[width=4in]{diginorm-fig2a.pdf}
+%CTB\includegraphics[width=4in]{diginorm-fig2a.pdf}
 \end{center}
 \caption{
 {\bf Mapping and k-mer coverage measures correlate for biased samples.}
@@ -793,14 +800,16 @@ XXX
 \end{figure}
 
 \begin{figure}
+\includegraphics[width=4in]{diginorm-coverage.pdf}
 \caption{
-{\bf Coverage of simulated and real genomes, calculated from reads before and after normalization.}}
+{\bf Coverage distribution of simulated and real genomes, calculated from mapped reads before and after normalization (k=20, C=20).}}
 \label{fig:coverage}
 \end{figure}
 
 \begin{figure}
+\includegraphics[width=4in]{diginorm-accumulation.pdf}
 \caption{
-{\bf Accumulation of reads.}}
+{\bf Fraction of reads kept when normalizing the {\em E. coli} dataset to C=20 at k=20.}}
 \label{fig:accumulate}
 \end{figure}
 
@@ -814,16 +823,18 @@ XXX
 
 \begin{table}[!ht]
 \caption{
-\bf{Digital normalization to C=20 removes erroneous k-mers}}
+\bf{Digital normalization to C=20 removes many erroneous k-mers from sequencing data sets.  Numbers
+in parentheses indicate number of true k-mers lost at each step.}}
 \begin{tabular}{|l|c|c|c|c|}
 Data set & True 20-mers & 20-mers in reads & 20-mers at C=20 & \% reads kept\\
 \hline \\
 Simulated genome & 399,981 & 8,162,813 & 3,052,007 (-2) & 19\% \\
 Simulated mRNAseq & 48,100 & 2,466,638 (-88) & 1,087,916 (-9) & 4.1\% \\
-{\em E. coli} genome & XXX & YYY & ZZZ & 11\% \\
+{\em E. coli} genome & 4,542,150 & 175,627,381 (-152) & 90,844,428 (-5) & 11\% \\
 Mouse mRNAseq & XXX & YYY & ZZZ & 28\% \\
+
 \end{tabular}
-\begin{flushleft} XXX
+\begin{flushleft}
 \end{flushleft}
 \label{tab:normC20}
 \end{table}
@@ -836,10 +847,10 @@ Data set & True 20-mers & 20-mers in reads & 20-mers remaining & \% reads kept\\
 \hline \\
 Simulated genome & 399,981 & 8,162,813 & 453,588 (-4) & 5\% \\
 Simulated mRNAseq & 48,100 & 2,466,638 (-88) & 182,855 (-351) & 1.2\% \\
-{\em E. coli} genome & XXX & YYY & ZZZ & 2.1\% \\
+{\em E. coli} genome & 4,542,150 & 175,627,381 (-152) & 7,638,175 (-23) & 2.1\% \\
 Mouse mRNAseq & XXX & YYY & ZZZ & AA\% \\
 \end{tabular}
-\begin{flushleft} XXX
+\begin{flushleft}
 \end{flushleft}
 \label{tab:normC5}
 \end{table}
