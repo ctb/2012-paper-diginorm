@@ -1,3 +1,5 @@
+% Review: Chris, Aditi, Russell, Yanni, Enbody.
+
 % Template for PLoS
 % Version 1.0 January 2009
 %
@@ -412,45 +414,62 @@ mouse mRNAseq data set, reducing it to a maximum of 20x coverage for
 k=26, and assembled both the original and normalized sequence reads
 with Oases and Trinity, two de novo transcriptome assemblers. (@k=26 for oases?)
 
+** cutoff: 300
+N       sum     max     filename
+57066   98121746        16930   oases-300.fa
+49165   85070769        17265   oases-k20-C20.k23-300.fa
+50801   79651841        15904   trinity-300.fa
+42324   59462241        14355   trinity-k26c5-300.fa
+
 In both cases the computational resources necessary to complete an
-assembly were significantly reduced (Table @@), but normalization had different
-effects on the assemblers.  In the case of the Trinity
+assembly were significantly reduced (Table @@), but normalization had
+different effects on the assemblers.  In the case of the Trinity
 assembly, both the number of transcripts greater than 300 bases and
 the sum total of bases in transcripts greater than 300 bases were
-severely affected by digital normalization.  A BLAST-based method of
-comparing transcript assemblies determined that while the entire normalized
-Trinity assembly mapped to the full Trinity assembly, only 83\% of the
-full Trinity assembly mapped to the normalized Trinity assembly. Thus quite
-a few distinct transcripts were lost.  (@CTB mention BLAST multi align; see
-Trinity paper for their method.)
+severely affected by digital normalization.  We used BLASTN to compare
+sequence content at a length of 200 bases, and determined that while
+99.0\% of the sequence in the normalized Trinity assembly mapped to
+the full Trinity assembly, only 85.6\% of the full Trinity assembly
+mapped to the normalized Trinity assembly.  Thus a significant portion
+of long regions in the full transcriptome was lost after digital
+normalization.  However, 98.4\% of the unique 26-mers in the full
+Trinity assembly were found in the normalized Trinity assembly, 
+so the core sequence content was not that different.
+
+(@CTB mention BLAST multi align; see Trinity
+paper for their method.)
 
 In contrast, while the number and sum total of bases were reduced in
-the Oases assembly, the normalized Oases assembly mapped entirely to the full
-Oases assembly, and the full Oases assembly mapped entirely to the normalized
-Oases assembly.  This suggests that the main effect of
-normalization on the Oases assembly was to eliminate {\em combinations} of
-exons rather than eliminating specific exons
-%(@CTB how do we confirm?)
+the normalized Oases assembly, 98.6\% of the normalized Oases
+assembly mapped to the full Oases assembly, and 98.5\% of the full
+Oases assembly mapped to the normalized assembly -- suggesting that
+the assemblies were virtually identical in terms of sequence content.
+One explanation for this loss is that digital normalization
+eliminated low-abundance splice variants, while retaining the
+individual exons.
 
-There are two possible reasons for this substantial negative effect on
-the Trinity assembly.  First, digital normalization could be
-eliminating k-mers that are used in the assembly; and second, digital
-normalization could be affecting the Trinity algorithm for determining
-likely transcripts.  To further investigate the Trinity results, we
-adopted the ``Oracle set'' approach used in Grabherr et al. (2011) and
-examined the extent to which k-mers in the original and normalized
-data set covered the full Trinity assembly.  We found that all but
-0.5\% of the k-mers used in the Trinity assembly were present in the
-normalized assembly.  Furthermore, all of the lost k-mers were at the
-ends of the reconstructed transcripts, suggesting that the
-end-sampling bias observed with the simulated data (above) was the
-source of the loss.  Together with the Oases results, this suggests
-that there is no inherent and substantial loss of informative k-mers
-because of digital normalization.  This implies that digital
-normalization is primarily affecting the algorithm that Trinity uses
-to determine which reads to assemble into transcripts.
+(@CTB how do we confirm?  blast comparison of isoforms is bridging splice connex?)
 
-% @CTB change-k-value argument?
+There are two possible reasons for the substantial negative effect of
+digital normalization on the Trinity assembly.  First, digital
+normalization could be eliminating k-mers that are used in the
+assembly; and second, digital normalization could be affecting the
+Trinity algorithm for determining likely transcripts.  To further
+investigate the Trinity results, we adopted the ``Oracle set''
+approach used in Grabherr et al. (2011) and examined the extent to
+which k-mers in the original and normalized data set covered the full
+Trinity assembly XXXπ.  We found that all but 0.5\% of the k-mers used in
+the Trinity assembly were present in the normalized assembly.
+Furthermore, all of the lost k-mers were at the ends of the
+reconstructed transcripts, suggesting that the end-sampling bias
+observed with the simulated data (above) was the source of this minor loss.
+Together with the Oases results, this suggests that there is no
+inherent and substantial loss of informative k-mers because of digital
+normalization.  This implies that digital normalization is primarily
+affecting the algorithm that Trinity uses to determine which reads to
+assemble into transcripts.
+
+% @CTB change-k-value argument? what if we could change k value for trin?
 
 \section*{Discussion}
 
@@ -524,6 +543,8 @@ transcriptome data can now be run in under 60 GB of RAM.  Computers
 of this size are available through rental ``cloud computing'' providers
 such as Amazon, making it possible for researchers without substantial
 compute hardware to do transcriptome assembly for non-model organisms.
+
+@figure out how to make argument here.
 
 \subsection*{Digital normalization removes isoforms and drops terminal k-mers}
 
@@ -750,6 +771,8 @@ relaxed data reduction, then error trimming, and then more severe data
 reduction again; basically, more scalable error trimming before the
 most severe round of data reduction.
 
+Talk about foo.
+
 % You may title this section "Methods" or "Models". 
 % "Models" is not a valid title for PLoS ONE authors. However, PLoS ONE
 % authors may use "Analysis" 
@@ -758,7 +781,7 @@ most severe round of data reduction.
 % Do NOT remove this, even if you are not including acknowledgments
 \section*{Acknowledgments}
 
-Chris Hart, James M. Tiedje, USDA, NSF, Brian Haas.
+Chris Hart, James M. Tiedje, USDA * 2, NSF, Brian Haas.
 
 %\section*{References}
 % The bibtex filename
@@ -766,8 +789,10 @@ Chris Hart, James M. Tiedje, USDA, NSF, Brian Haas.
 
 \newpage
 
+\section*{Figure Legends}
+
 \begin{figure}
-\includegraphics[width=4in]{diginorm-ranks.pdf}
+\centerline{\includegraphics[width=4in]{diginorm-ranks.pdf}}
 \caption{
 {\bf Representative rank-abundance distributions for k-mers from a read with no errors,
 a read with a single substitution error, and a read with multiple
@@ -775,48 +800,47 @@ substitution errors.}}
 \label{fig:rankabund}
 \end{figure}
 
-% @@CTB \section*{Figure Legends}
 \begin{figure}[!ht]
 \begin{center}
-%CTB\includegraphics[width=4in]{diginorm-fig1a.pdf}
+\centerline{\includegraphics[width=4in]{diginorm-sim-genome.pdf}}
+\centerline{\includegraphics[width=4in]{diginorm-ecoli-genome.pdf}}
 \end{center}
 \caption{
-{\bf Mapping and k-mer coverage measures correlate for uniform sampling on
-both simulated data and real {\em E. coli} data.}
-XXX
+{\bf Mapping and k-mer coverage measures correlate for simulated genome
+data and a real {\em E. coli} data set.  Simulated data $r^2 = 0.79$; {\em
+E. coli} $r^2 = 0.80$.}
 }
 \label{fig:random}
 \end{figure}
 
-%@@CTB \section*{Figure Legends}
-
 \begin{figure}[!ht]
 \begin{center}
-%CTB\includegraphics[width=4in]{diginorm-fig2a.pdf}
+\centerline{\includegraphics[width=4in]{diginorm-sim-transcr.pdf}}
+\centerline{\includegraphics[width=4in]{diginorm-mouse-transcr.pdf}}
 \end{center}
 \caption{
-{\bf Mapping and k-mer coverage measures correlate for biased samples.}
-XXX
+{\bf Mapping and k-mer coverage measures correlate for simulated transcriptome data as well as real mouse transcriptome data. Simulated data $r^2 = 0.93$;
+mouse transcriptome $r^2 = 0.90$.}
 }
 \label{fig:transcripts}
 \end{figure}
 
 \begin{figure}
-\includegraphics[width=4in]{diginorm-coverage.pdf}
+\centerline{\includegraphics[width=4in]{diginorm-coverage.pdf}}
 \caption{
 {\bf Coverage distribution of simulated and real genomes, calculated from mapped reads before and after normalization (k=20, C=20).}}
 \label{fig:coverage}
 \end{figure}
 
 \begin{figure}
-\includegraphics[width=4in]{diginorm-accumulation.pdf}
+\centerline{\includegraphics[width=4in]{diginorm-accumulation.pdf}}
 \caption{
 {\bf Fraction of reads kept when normalizing the {\em E. coli} dataset to C=20 at k=20.}}
 \label{fig:accumulate}
 \end{figure}
 
 \begin{figure}
-\includegraphics[width=4in]{diginorm-endbias.pdf}
+\centerline{\includegraphics[width=4in]{diginorm-endbias.pdf}}
 \caption{
 {\bf K-mers at the ends of sequences are lost during digital normalization.}}
 \label{fig:supplEnd}
@@ -842,6 +866,8 @@ Mouse mRNAseq & XXX & YYY & ZZZ & 28\% \\
 \label{tab:normC20}
 \end{table}
 
+%%%%%%%%%%%%%%%%%
+
 \begin{table}[!ht]
 \caption{
 \bf{Three-pass digital normalization removes most erroneous k-mers}}
@@ -857,6 +883,45 @@ Mouse mRNAseq & XXX & YYY & ZZZ & AA\% \\
 \end{flushleft}
 \label{tab:normC5}
 \end{table}
+
+%%%%%%%%%%%%%%%%%%
+
+\begin{table}[!ht]
+\caption{
+\bf{Three-pass digital normalization reduces computational requirements for contig assembly of genomic data.}}
+\begin{tabular}{|l|c|c|c|c|}
+
+Data set & Assembly time & Assembly memory & DN assembly time & DN assembly memory \\
+\hline \\
+{\em E. coli} (5m) & 235s & 2.7gb & 24s & 0.4gb \\
+{\em E. coli} (31m) & XXX & YYY & ZZZ & AAA \\
+
+\end{tabular}
+\begin{flushleft}
+\end{flushleft}
+\label{tab:dngenome}
+\end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{table}[!ht]
+\caption{
+\bf{Digital normalization reduces computational requirements for assembly of transcriptomic data.}}
+
+\begin{tabular}{|l|c|c|c|c|}
+
+Data set & Assembly time & Assembly memory & DN assembly time & DN assembly memory \\
+\hline \\
+Mouse (Oases) & XXX & YYY & 73m & 34.6gb \\
+Mouse (Trinity) & 2297m & 42.1gb & 634m & 36.4gb \\
+
+\end{tabular}
+
+\begin{flushleft}
+\end{flushleft}
+\label{tab:dntrans}
+\end{table}
+
 
 \end{document}
 
