@@ -407,8 +407,8 @@ from the simulated mRNAseq data than from the simulated genome (351 of
 (.000001\%) in the genome).  While still only a tiny fraction of the total number of
 real k-mers, the difference is striking -- the simulated mRNAseq sample lost
 k-mers at almost 1000-fold the rate of the simulated genomic sample!  Upon further
-investigation, {\em 99.9\%} of the lost k-mers were located near to the
-ends of the source sequences; see Figure \ref{fig:endloss}.  This is
+investigation, {\em 99.9\%} of the lost k-mers were located within 20
+bases of the ends of the source sequences; see Figure \ref{fig:endloss}.  This is
 because digital normalization cannot distinguish between erroneous
 k-mers and k-mers that are undersampled due to edge effects.  In the
 case of the simulated genome, which was generated as one large
@@ -430,7 +430,7 @@ and use the single-pass digital normalization for transcriptomes.
 We applied the three-pass digital normalization and error trimming
 protocol to several real data sets prior to assembly, including
 sequences from high-coverage single colonies and a single-cell
-MDA-amplified genome.  We then ran the Velvet de novo assembler on the
+MDA-amplified genome.  We then ran the Velvet assembler on the
 resulting reads to generate contigs, and compared the sequence content
 of the resulting assemblies to the best known reference (see Methods).
 In all cases, digital normalization discarded well over 90\% of the
@@ -453,18 +453,19 @@ Oases and Trinity, two de novo transcriptome assemblers.
 
 In both cases the computational resources necessary to complete an
 assembly were significantly reduced (Table \ref{tab:dntrans}), but
-normalization had different effects on the assemblers.  In the case of
-the Trinity assembly, both the number of transcripts greater than 300
-bases and the sum total of bases in transcripts greater than 300 bases
-were severely affected by digital normalization.  We used BLASTN to
-compare sequence content at a length of 200 bases, and determined that
-while 99.0\% of the sequence in the normalized Trinity assembly mapped
-to the full Trinity assembly, only 85.6\% of the full Trinity assembly
-mapped to the normalized Trinity assembly.  Thus a significant portion
-of long regions in the full transcriptome was lost after digital
-normalization.  However, 98.4\% of the unique 26-mers in the full
-Trinity assembly were found in the normalized Trinity assembly, so the
-core sequence content was not that different.
+normalization had different effects on performance of the assemblers.
+In the case of the Trinity assembly, both the number of transcripts
+greater than 300 bases and the sum total of bases in transcripts
+greater than 300 bases were severely affected by digital
+normalization.  We used BLASTN to compare sequence content at a length
+of 200 bases, and determined that while 99.0\% of the sequence in the
+normalized Trinity assembly mapped to the full Trinity assembly, only
+85.6\% of the full Trinity assembly mapped to the normalized Trinity
+assembly.  Thus a significant portion of long regions in the full
+transcriptome was lost after digital normalization.  However, 98.4\%
+of the unique 26-mers in the full Trinity assembly were found in the
+normalized Trinity assembly, so the core sequence content was not that
+different.
 
 (@CTB mention BLAST multi align; see Trinity
 paper for their method.)
@@ -571,7 +572,7 @@ data for {\em any} de Bruijn graph assembler.  Demonstrating this is
 outside the scope of this paper, as does a study of precisely what
 parameters perform best with which assemblers.
 
-@@show figure of converted coverage from nonuniform distribution!
+@@show figure of converted coverage from nonuniform distribution! SICB
 
 The net effect of digital normalization is to significantly reduce
 computational requirements for {\em de novo} assembly.  This is not a
@@ -641,7 +642,7 @@ complexity is linear with respect to the data size, and perhaps more
 importantly it is {\em single-pass}: the algorithm does not need to
 look at any read more than once.  Moreover, because reads are
 accumulated sub-linearly, errors do not accumulate quickly and overall
-memory requirements for digital normalization grow slowly.
+memory requirements for digital normalization grow slowly. @@show?
 
 The first pass of digital normalization is implemented as an online streaming
 algorithm in which reads are examined once.  Streaming algorithms are very useful for solving data analysis
@@ -658,15 +659,16 @@ valuable from an algorithmic perspective, because they provide a
 robust foundation for further work (c.f. Halting Problem).
 
 We note that the general concept of removing redundant {\em data}
-while retaining {\em information} has very broad applicability.  For
-example, digital normalization can be done prior to homology search on
-unassembled reads, potentially reducing the computational requirements
-for e.g. BLAST and HMMER without loss of sensitivity (MG-RAST).  Digital
-normalization may also be applicable to merge multiple different read
-data sets from different read technologies, in order to discard
-entirely redundant sequences and retain only sequences containing
-``new'' information.  These approaches remain to be explored in future
-work.
+while retaining {\em information} is a form of ``lossy compression''
+used widely in image processing and video compression.  This approach
+has very broad applicability.  For example, digital normalization
+can be done prior to homology search on unassembled reads, potentially
+reducing the computational requirements for e.g. BLAST and HMMER
+without loss of sensitivity (MG-RAST).  Digital normalization may also
+be applicable to merge multiple different read data sets from
+different read technologies, in order to discard entirely redundant
+sequences and retain only sequences containing ``new'' information.
+These approaches remain to be explored in future work.
 
 \section*{Leftover text}
 
@@ -863,6 +865,90 @@ Talk about foo.
 % authors may use "Analysis" 
 \section*{Materials and Methods}
 
+\subsection*{Data sets}
+
+The {\em E. coli}, {\em S. aureus}, and {\em Deltaproteobacteria} data sets
+were published by Chitsaz et al. \cite{pubmed21926975}, and downloaded
+from http://bix.ucsd.edu/projects/singlecell/.  The mouse data set was
+published by Grabherr et al. \cite{pubmed21572440} and downloaded
+from http://trinityrnaseq.sf.net/.  All data sets were used without
+modification for the analyses in this paper.
+
+The simulated genome and transcriptome were generated from a uniform
+AT/CG distribution.  The genome consisted of a single chromosome
+400,000 bases in length, while the transcriptome consisted of 100 transcripts
+of length 500.  100-base reads were generated uniformly from the genome
+to an estimated coverage of 200x, with a random 1\% per-base error.
+100-base reads were generated from the transcriptome at expression levels
+of 10, 100, and 1000, with transcripts assigned randomly with equal probability
+to each expression group; transcript reads also had a 1\% per-base error.
+
+\subsection*{Scripts and software}
+
+All simulated data sets and all analysis summaries were generated by
+Python scripts, which are available at http://github.com/ctb/@@@/.
+Digital normalization and k-mer analyses were performed with the khmer
+software package, written in C++ and Python, available at
+http://github.com/ctb/khmer/, branch @@@.  khmer is Copyright (c) 2010
+Michigan State University, and is free software available for
+distribution, modification, and redistribution under the BSD license.
+
+Mapping was performed with bowtie v0.12.7 \cite{pubmed19261174}.
+Genome assembly was done with velvet 1.2.01 \cite{pubmed18349386}.
+Transcriptome assembly was done with velvet 1.1.05/oases 0.1.22 and
+Trinity, head of branch on 2011.10.29.
+
+Graphs and correlation coefficients were generated using matplotlib
+v1.1.0, numpy v1.7, and ipython notebook v0.12 @@cite; the ipython
+notebook and all data summaries necessary to regenerate the figures
+are available at http://github.com/ctb/@@@/.
+
+\subsection*{k-mer analysis parameters}
+
+The khmer software uses a CountMin Sketch data structure to count k-mers,
+which requires a fixed memory allocation (@@Cormode et al.).  In all cases
+the memory usage was fixed such that the calculated false positive rate was
+below 0.001.  By default k was set to 20.
+
+\subsection*{Read coverage estimates and comparisons}
+
+Genome and transcriptome coverage was calculated by mapping all reads
+to the reference with bowtie ({\tt -a --best --strata}) and then
+computing the per-base coverage in the reference.  Read coverage was
+computed by then averaging the per-base reference coverage for each
+position in the mapped read; where reads were mapped to multiple
+locations, a reference location was chosen randomly for computing
+coverage.  Median k-mer counts were computed with khmer as described
+in the text.
+
+Correlations were computed using numpy.
+
+\subsection*{Assembly parameters}
+
+In Table \ref{tab:dngenome}, the assembly k parameter for Velvet was:
+k=45 for {\em E. coli}; k=41 for {\em S. aureus} single cell; and k=39
+for {\em Deltaproteobacteria} single cell.   @@dn k.  
+
+In Table \ref{tab:dntrans}, the assembly k parameter for Oases (both
+pre/post digital normalization) was k=23.
+
+\subsection*{Assembly overlap}
+
+Assembly overlap was computed by using NCBI BLASTN to build local
+alignments for two assemblies, filtering for matches with bit scores
+$>$ 200, and then computing the fraction of bases in each assembly
+with at least one alignment.  Total fractions were normalized to
+self-by-self BLASTN overlaps to account for filtering and repeats.
+
+\subsection*{Compute requirement estimation}
+
+Execution time was measured using real time from bash 'time'.  Peak
+memory usage was estimated with the 'memusg' script from
+stackoverflow.com, peak-memory-usage-of-a-linux-unix-process, included
+in the khmer repository.  While several different machines were used
+for different analyses, comparisons within analyses were always done
+on the same machine.
+
 % Do NOT remove this, even if you are not including acknowledgments
 \section*{Acknowledgments}
 
@@ -892,7 +978,7 @@ substitution errors.}}
 \end{center}
 \caption{
 {\bf Mapping and k-mer coverage measures correlate for simulated genome
-data and a real {\em E. coli} data set.  Simulated data $r^2 = 0.79$; {\em
+data and a real {\em E. coli} data set (5m reads).  Simulated data $r^2 = 0.79$; {\em
 E. coli} $r^2 = 0.80$.}
 }
 \label{fig:random}
@@ -936,7 +1022,7 @@ mouse transcriptome $r^2 = 0.90$.}
 \begin{table}[!ht]
 \caption{
 \bf{Digital normalization to C=20 removes many erroneous k-mers from sequencing data sets.  Numbers
-in parentheses indicate number of true k-mers lost at each step.}}
+in parentheses indicate number of true k-mers lost at each step, based on known reference (if available).}}
 \begin{tabular}{|l|c|c|c|c|}
 Data set & True 20-mers & 20-mers in reads & 20-mers at C=20 & \% reads kept\\
 \hline \\
@@ -976,13 +1062,12 @@ Mouse mRNAseq & XXX & YYY & ZZZ & AA\% \\
 \bf{Three-pass digital normalization reduces computational requirements for contig assembly of genomic data.}}
 \begin{tabular}{|l|c|c|c|c|}
 
-Data set & Assembly time & Assembly memory & DN assembly time & DN assembly memory \\
+Data set & N reads pre/post & Assembly time pre/post & Assembly memory pre/post \\
 \hline \\
-{\em E. coli} (5m) & 235s & 2.7gb & 24s & 0.4gb \\
-{\em E. coli} (31m) & XXX & YYY & ZZZ & AAA \\
-E. coli MDA & XXX & YYY & ZZZ & AAA \\
-{\em S. aureus} (XXX) & XXX & YYY & ZZZ & AAA \\
-MDA (XXX) & XXX & YYY & ZZZ & AAA \\
+{\em E. coli} & 5m/ & 235s / 24s (9.8x) & 2.7gb / 0.4gb (6.8x) \\
+{\em E. coli} & 31m/ & 1040s / XXX & 11.2gb / YYY gb (x) \\ 
+{\em S. aureus} single-cell & 58m/ & 631s / 35s (18x) & 2.9gb / 0.4gb (7.2x) \\
+{\em Deltaproteobacteria} single-cell (67m/) & 651s / 26s (25x) & 3.2gb / 0.5gb (6.4x) \\
 
 \end{tabular}
 \begin{flushleft}
@@ -998,10 +1083,10 @@ MDA (XXX) & XXX & YYY & ZZZ & AAA \\
 
 \begin{tabular}{|l|c|c|c|c|}
 
-Data set & Assembly time & Assembly memory & DN assembly time & DN assembly memory \\
+Data set & Assembly time pre/post & Assembly memory pre/post \\
 \hline \\
-Mouse (Oases) & XXX & YYY & 73m & 34.6gb \\
-Mouse (Trinity) & 2297m & 42.1gb & 634m & 36.4gb \\
+Mouse (Oases) & 761 min/ 73 min (10.4x) & 116.0gb / 34.6gb (3.4x) \\
+Mouse (Trinity) & 2297 min / 634 min (3.6x) & 42.1gb / 36.4gb (1.2x) \\
 
 \end{tabular}
 
