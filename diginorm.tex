@@ -1,7 +1,8 @@
 % Review: Chris, Aditi, Russell, Yanni, Enbody, Brian Haas, Jared,
-% andy cameron, rebecca, tringe, emsch, emrich, dworkin.
+% andy cameron, emrich.
 
-% send final to: gasser, pws, gpgc, woyke, cheng, dodgson.
+% send final to: gasser, pws, gpgc, woyke, cheng, dodgson, dworkin, hana,
+% dray.
 
 % @@spellcheck!
 % VERIFY coverage figure; 0 coverage
@@ -151,14 +152,14 @@ The ongoing revolution in DNA sequencing technologies has led to a new
 problem: how do we analyze the resulting very large sequence data sets
 quickly and efficiently? These data sets contain millions to billions
 of short reads, and have high error rates and substantial sampling
-biases.  The vast quantities of deep sequencing data produced by
+biases \cite{pubmed19997069}.  The vast quantities of deep sequencing data produced by
 these new sequencing technologies are driving
 computational biology to extend and adapt previous approaches to sequence
 analysis.  In
 particular, the widespread use of deep shotgun sequencing on
 previously unsequenced genomes, transcriptomes, and metagenomes, has
 resulted in the development of several new approaches to {\em de novo}
-sequence assembly.
+sequence assembly \cite{pubmed20211242}.
 
 There are two basic challenges to dealing with short-read sequences
 from shotgun sequencing. The first is that deep sequencing is needed
@@ -168,7 +169,7 @@ generally biased by sample content,
 sample preparation and sequencing technology, which requires even deeper
 sequencing to overcome.  For this reason, a
 human genome may require 100x coverage or more for near-complete
-sampling, leading to 300 gigabase+ data sets.  Since the minimum sampling depth
+sampling, leading to 300 gigabase+ data sets \cite{pubmed21187386}.  Since the minimum sampling depth
 is determined by the prevalence of the lowest abundance molecule, transcriptomes and
 metagenomes may also require similarly deep sequencing for complete
 sampling of rare molecules. This leads to extremely large amounts of
@@ -177,7 +178,7 @@ sequencing data.
 The second problem with short-read shotgun sequencing is the high
 error rate.  Illumina GAII has up to a 1\% error rate in its
 sequences, yielding an average of one base error in every 100 bp of
-data.  These errors grow linearly with the amount of data generated and
+data \cite{pubmed19997069}.  These errors grow linearly with the amount of data generated and
 dominate novelty in high-coverage sequencing data sets.  Tracking this
 novelty and resolving errors is computationally expensive.
 
@@ -185,7 +186,7 @@ These two problems have combined to result in a significant
 computational challenge: it is now straightforward to generate data
 sets that cannot easily be analyzed computationally.  While hardware approaches
 to scaling existing algorithms are emerging, sequencing capacity
-is continues to grow faster than computational capacity.
+is continues to grow faster than computational capacity \cite{pubmed20441614}.
 This arms race cannot be won only through improvements
 in hardware.  What algorithmic solutions have been applied?
 
@@ -193,35 +194,36 @@ Analysis of the large amounts of data resulting from deep sequencing
 has been tackled in a number of ways.  A new class of alignment tools,
 mostly relying on the Burroughs-Wheeler transform, has been created
 specifically to do ultra-fast short-read alignment to reference
-sequence.  In cases where the reference sequence must be assembled de
+sequence \cite{pubmed19430453}.  In cases where the reference sequence must be assembled de
 novo from the sequence data, a number of new assemblers have been
-created, including ABySS, Velvet, SOAPdenovo, ALLPATHS, and SGA.
+created, including ABySS, Velvet, SOAPdenovo, ALLPATHS, and SGA
+\cite{pubmed20211242,pubmed21187386,pubmed22156294}.
 These assemblers rely on theoretical advances such as the application
-of de Bruijn graphs and compressed @LM data structures to store large
-amounts of data in a computationally convenient manner.  As short-read
+of de Bruijn graphs and compressed data structures to store large
+amounts of data in a computationally convenient manner \cite{pubmed22068540,pubmed20529929}.  As short-read
 sequencing has been applied to single cell genomes, transcriptomes,
 and metagenomes, yet another generation of assemblers has emerged to
 handle reads from very abundance-biased populations of molecules;
 these tools, including Trinity, Oases, MetaVelvet, Meta-IDBA, and
 Velvet-SV, adopt local models of sequence coverage to help build
-assemblies.  Because these tools all rely on k-mer approaches and
+assemblies \cite{pubmed21572440,pubmed22368243,metavelvet,pubmed21685107,pubmed21926975}.  Because these tools all rely on k-mer approaches and
 require exact matches between sequences, their performance is
 extremely sensitive to the number of errors present in the underlying
 data.  This sensitivity to errors has led to a number of error removal
 and correction approaches.
 
 Several approaches have been applied to detecting and removing or
-correcting errors in large data sets \cite{pubmed21114842}.
-Typically, these approaches involve finding low-abundance fixed-length
+correcting errors in large data sets \cite{pubmed21685062,pubmed15059830,pubmed21114842}.
+One such approach involves finding low-abundance fixed-length
 words, or k-mers, and treating them as likely errors; these errors can
 then be eliminated or ``corrected'' by changing them to similar k-mers
-that are in high abundance.  One challenge for these techniques is
+that are in high abundance.  One challenge for all of these techniques is
 that they require at least two complete iterations across the data
-set: one iteration to count all k-mers, and a second to perform the
+set: one iteration to collect abundance spectra, and a second to perform the
 trimming or correction.  For extremely large data sets, this is a
 significant problem: the ``noise'' from sequencing errors drives a
-supra-linear increase in the number of k-mers, so as data set size
-increases, the computation and memory needed to track k-mers increases
+supra-linear increase in the number of words, so as data set size
+increases, the computation and memory needed to track words increases
 dramatically.
 
 Here, we describe a single-pass algorithm for detection and
@@ -237,7 +239,7 @@ sequencing recover low-abundance molecules as well as high-abundance
 molecules \cite{pubmed8889548,pubmed7937745}.  In turn, digital
 normalization was initially designed to deal with reads from very
 abundance-biased samples such as single-cell amplified genomic DNA,
-transcriptomes, and metagenomes.  Digital normalization works by
+transcriptomes, and metagenomes \cite{pubmed16732271,pubmed19015660,pubmed16304596}.  Digital normalization works by
 systematically removing redundant reads from data sets.  By
 eliminating redundant reads, errors contained in these reads do not
 accumulate in the normalized data set, and we see a correspondingly
@@ -246,8 +248,8 @@ We present a constant-memory implementation of this approach that
 operates in time linear with the size of the input data.  We
 demonstrate its effectiveness for reducing compute requirements for de
 novo assembly on several real data sets, including data from a
-microbial genome, MDA-amplified single-cell genomic DNA, and a mouse
-transcriptome.
+microbial genome, MDA-amplified single-cell genomic DNA, and yeast and mouse
+transcriptomes.
 
 % Results and Discussion can be combined.
 \section*{Results}
@@ -269,7 +271,7 @@ One approach to estimating coverage is to select a read overlapping
 the location of interest, and then apply the following
 procedure. First, choose a number $k$ such that k-mers -- words of
 length $k$ -- are unique in the single-copy source genome; a k-mer
-size of 20 usually serves (cite k-mer counts paper).  Next, for each
+size of 20 usually serves \cite{pubmed12902383,pubmed19814784}.  Next, for each
 k-mer in the selected read, calculate the number of times that the
 k-mer appears in {\em any} read across the entire data set.  The
 abundance of these k-mers will represent the true depth of sampling of
@@ -454,7 +456,7 @@ mRNAseq data set contains only 100m reads, which may not be enough to
 thoroughly sample the rarest molecules; in this case the abundance trimming
 may remove real k-mers as well as erroneous k-mers.  Therefore we only
 apply the three-pass protocol to extremely deep genome samples below,
-and use the single-pass digital normalization for the mouse transcriptome.
+and use the single-pass digital normalization for the yeast and mouse transcriptomes.
 
 \subsection*{Digital normalization facilitates {\em de novo} assembly of genomic data}
 
@@ -463,7 +465,7 @@ protocol to real data sets from Chitsaz et al (2011).  The data sets
 were all high coverage, and included sequences from a single colony of
 {\em E. coli}, MDA-amplified single-cell DNA from {\em S. aureus}, and
 MDA-amplified DNA from a single cell of an uncultured {\em
-  Deltaprotobacterium}.  Digital normalization was performed in 1gb of
+  Deltaprotobacterium} \cite{pubmed21926975}.  Digital normalization was performed in 1gb of
 memory and took about 1 min per million reads.  For all three samples,
 the number of reads remaining after digital normalization was reduced
 by at least 30-fold, while the memory and time requirements were
@@ -494,14 +496,15 @@ nearby {\em Deltaproteobacteria}.  This suggests that for this sample,
 digital normalization is competitive with Velvet-SC in terms of contig
 assembly of sequence reads from MDA-amplified DNA.
 
-@@ tables or anything?
+% @@ tables or anything?
 
 \subsection*{Digital normalization facilitates {\em de novo} assembly of transcriptomes}
 
 We next applied single-pass digital normalization to published yeast
-and mouse mRNAseq data sets, reducing them to 20x coverage for k=20.
+and mouse mRNAseq data sets, reducing them to 20x coverage for k=20
+\cite{pubmed21572440}.
 Digital normalization on these samples used 8gb of memory and took
-about 1min per million reads.  We then assembled both the original and
+about 1 min per million reads.  We then assembled both the original and
 normalized sequence reads with Oases and Trinity, two {\em de novo}
 transcriptome assemblers (Table \ref{tab:dntrans}).  (Note that due to
 differing execution parameters, the Oases runtimes cannot be compared
@@ -561,7 +564,7 @@ than Oases to the change in coverage caused by digital normalization.
 Regardless, the strong performance of Oases on digitally normalized
 samples, as well as high retention of k-mers (Table \ref{tab:normC20})
 suggests that the primary sequence content for the transcriptome remains
-in the normalized sample.
+present in the normalized sample.
 
 \section*{Discussion}
 
@@ -597,11 +600,11 @@ particular, the memory required for digital normalization is always
 less than the memory required for assembly.  This is for two reasons:
 first, digital normalization simply counts fewer k-mers; and second,
 we use a memory efficient k-mer counting scheme based on a CountMin
-Sketch.  While the time required for digital normalization is in some
+Sketch \cite{CountMinSketch}.  While the time required for digital normalization is in some
 cases approximately the same as that required for a single round of
 assembly, we note that often one must try assembly with many different
 parameters in order to determine the best choice; digital normalization
-need only be performed once, prior to any assembly.
+need only be performed once, prior to any assemblies.
 
 \subsection*{Digital normalization dramatically scales {\em de novo} assembly}
 
@@ -647,7 +650,7 @@ study we only demonstrate this for a few specific assemblers.
 % @@show figure of converted coverage from nonuniform distribution! SICB
 
 The net effect of digital normalization is to significantly reduce
-computational requirements for {\em de novo} assembly.  This is not a
+computational requirements for {\em de novo} assembly of contigs.  This is not a
 trivial consideration: as Salzberg et al. (2012) state in the GAGE
 paper, ``For larger genomes, the choice of assemblers is often limited
 to those that will run without crashing'' \cite{pubmed22147368}.  As
@@ -673,9 +676,8 @@ digital normalization will discriminate against highly repetitive
 sequences.  However, it is worth noting that many of these are
 challenges for most assemblers: recovering low-abundance isoforms from
 mRNAseq, assembling genomes from highly polymorphic organisms, and
-dealing well with repeats are all active areas of research @cite dbg
-repeat stuff.  Below, we discuss some potential ways to improve digital
-normalization.
+dealing well with repeats are all active areas of research \cite{pubmed18549302,pubmed20633259,pubmed18541131}.  Below, we discuss some potential ways to improve digital
+normalization to better handle such issues.
 
 % @@retention of errors at a certain point.
 
@@ -731,7 +733,7 @@ Digital normalization uses a reference-independent estimator of
 coverage, so it can be applied {\em de novo} to {\em any} data set.  The
 approach is extremely computationally convenient: the runtime
 complexity is linear with respect to the data size, and perhaps more
-importantly it is {\em single-pass}: the algorithm does not need to
+importantly it is {\em single-pass}: the basic algorithm does not need to
 look at any read more than once.  Moreover, because reads are
 accumulated sub-linearly, errors do not accumulate quickly and overall
 memory requirements for digital normalization should grow slowly with
@@ -752,62 +754,57 @@ provide solution to sequence data analysis with both (linear) time and
 rate of the CountMin Sketch data structure is well understood and easy
 to predict, we can provide {\em data quality guarantees} as well.
 These kinds of guarantees are immensely valuable from an algorithmic
-perspective, because they provide a robust foundation for further work
-(c.f. Halting Problem).
+perspective, because they provide a robust foundation for further work.
+% @(c.f. Halting Problem).
 
+% @compressed sensing
 We note that the general concept of removing redundant {\em data}
 while retaining {\em information} is a form of ``lossy compression''
-used widely in image processing and video compression (@@ compressed
-sensing).  This approach has very broad applicability.  For example,
+used widely in image processing and video compression.  This approach has very broad applicability.  For example,
 digital normalization can be done prior to homology search on
 unassembled reads, potentially reducing the computational requirements
-for e.g. BLAST and HMMER without loss of sensitivity (MG-RAST).
+for e.g. BLAST and HMMER without loss of sensitivity
+\cite{pubmed20150127}.
 Digital normalization may also be applicable for merging multiple
 different read data sets from different read technologies, in order to
 discard entirely redundant sequences and retain only sequences
 containing ``new'' information.  These approaches remain to be
 explored in future work.
 
-\section*{Misc foo}
+% \section*{Misc foo}
 
-\begin{verbatim}
+% \begin{verbatim}
 
-do missassembly analysis/a5? look at a5 for refs...
-NOT just error removal: smooths things out.
+% @do missassembly analysis/a5? look at a5 for refs...
+% @NOT just error removal: smooths things out.
 
-ht size/memory req scales with original genome size?
-show graph of accumulation of reads vs new k-mers - linear??
+% ht size/memory req scales with original genome size?
+% show graph of accumulation of reads vs new k-mers - linear??
 
-longer sequences mention?
+% alexis:
 
-alexis:
+% Possible fail data set: a group of isoforms that collectively have no
+% unique kmers and are expressed at drastically different levels.  Might
+% not even need random sampling and errors.
+% 
+% Exon1Exon2Exon3 (10)
+% Exon2Exon3                (100)
+% Exon1Exon2             (1000)
+% 
+% %In the case where two regions are represented as AXXXB and CXXXD: the
+% median might start getting screwy when XXX will generate more kmers
+% than AXX + XXB.  Say AXX generates 50 kmers, then XXX is long enough
+% to generate 101 kmers, then XXB generates 50 kmers.  The AXX and XXB
+% kmers are unique to the dataset.  XXX is shared.  All unique kmers
+% will be eliminated along with all but one shared kmer.
+% 
+% Aditi comments: emphasize lightweightness of diginorm.
 
-Possible fail data set: a group of isoforms that collectively have no
-unique kmers and are expressed at drastically different levels.  Might
-not even need random sampling and errors.
+% Talk about specificity/sensitivity/FP/TP.
 
-Exon1Exon2Exon3 (10)
-Exon2Exon3                (100)
-Exon1Exon2             (1000)
+% talk about quake + transcriptomes
 
-In the case where two regions are represented as AXXXB and CXXXD: the
-median might start getting screwy when XXX will generate more kmers
-than AXX + XXB.  Say AXX generates 50 kmers, then XXX is long enough
-to generate 101 kmers, then XXB generates 50 kmers.  The AXX and XXB
-kmers are unique to the dataset.  XXX is shared.  All unique kmers
-will be eliminated along with all but one shared kmer.
-
----
-
-Aditi comments: emphasize lightweightness of diginorm.
-
----
-
-Talk about specificity/sensitivity/FP/TP.
-
-talk about quake + transcriptomes
-
-\end{verbatim}
+% \end{verbatim}
 
 % You may title this section "Methods" or "Models". 
 % "Models" is not a valid title for PLoS ONE authors. However, PLoS ONE

@@ -12,3 +12,7 @@ diginorm.pdf: diginorm.tex diginorm.bib
 abstract.pdf: abstract.tex
 	pdflatex abstract
 	pdflatex abstract
+
+getcites:
+	python pubmed-getcites.py diginorm.aux > diginorm-auto.bib
+	cat manual.bib diginorm-auto.bib > diginorm.bib
