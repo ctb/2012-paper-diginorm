@@ -1056,20 +1056,19 @@ Data set & N reads pre/post & Assembly time pre/post & Assembly memory pre/post 
 
 \begin{table}[!ht]
 \caption{
-\bf{Digital normalization has assembler-specific effects on transcriptome
-assembly.}}
+\bf{Single-pass digital normalization to C=20 reduces computational
+requirements for transcriptome assembly.}}
 
 %add yeast
 
 \begin{tabular}{|l|c|c|c|c|}
 
-Data set & Contigs $>$ 300 & Total bp $>$ 300 & Contigs $>$ 1000 & Total bp $>$ 1000 \\
-\hline \\
-Yeast (Oases) & 12,654 / 9,547 & 33.2mb / 27.7mb & 9,156 / 7,345 & 31.2mb / 26.4mb \\
-Yeast (Trinity) & 10,344 / 12,092 & 16.2mb / 16.5mb & 5,765 / 6,053 & 13.6 mb / 13.1mb \\
-Mouse (Oases) & 57,066 / 49,356 & 98.1mb / 84.9mb & 31,858 / 27,318 & 83.7mb / 72.4mb \\
-Mouse (Trinity) & 50,801 / 61,242 & 79.6 mb / 78.8mb & 23,760 / 24,994 & 65.7mb / 59.4mb \\
-
+Data set & N reads pre/post & Assembly time pre/post & Assembly memory pre/post \\
+ \hline \\
+Yeast (Oases) & 100m / 9.3m & 181m / 12m (15.1x) & 45.2gb / 8.9gb (5.1x) \\
+Yeast (Trinity) & 100m / 9.3m & 887 min / 145 min (6.1x) & 31.8gb / 10.4gb (3.1x) \\
+Mouse (Oases) & 100m / 26.4m & 761 min/ 73 min (10.4x) & 116.0gb / 34.6gb (3.4x) \\
+Mouse (Trinity) & 100m / 26.4m & 2297 min / 634 min (3.6x) & 42.1gb / 36.4gb (1.2x) \\
 \end{tabular}
 
 \begin{flushleft}
