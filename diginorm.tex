@@ -527,22 +527,19 @@ as for Oases running on mouse.  However, while Trinity's runtime decreased
 by a factor of three on the normalized mouse data set, the memory requirements
 did not decrease significantly.  This may be because the mouse transcriptome
 is 5-6 times larger than the yeast transcriptome, and so the mouse data set
-is likely to be lower coverage overall.
+is probably lower coverage overall.
 
 % @REWRITE
 
-The resulting assemblies differed in summary statistics for mouse, with a
-20\% difference in the number of short contigs between the normalized
-and unnormalized Trinity and Oases assemblies (Table
-\ref{tab:dntrans0}).
-Curiously, digital normalization resulted in {\em fewer} contigs in
-the normalized Oases assembly, and {\em more} contigs in the
-normalized Trinity assembly, indicating that the assemblers were
-affected differently by digital normalization.
-Using a local-alignment-based overlap analysis (see Methods) we found
-very little difference in sequence content between the pre- and post-
-normalization assemblies in mouse:
-the normalized Oases assembly had an 98.5\% overlap with the
+The resulting assemblies differed in summary statistics (Table
+\ref{tab:dntrans0}).  For both yeast and mouse, Oases lost 5-10\% of
+total transcripts and total bases.  However, Trinity {\em gained}
+transcripts when assembling the normalized yeast and mouse data,
+gaining about about 1\% in total bases on yeast and losing about 1\%
+on total bases in mouse.  Using a local-alignment-based overlap
+analysis (see Methods) we found very little difference in sequence
+content between the pre- and post- normalization assemblies: for
+example, the normalized Oases assembly had an 98.5\% overlap with the
 unnormalized Oases assembly, while the normalized Trinity assembly had
 a 97\% overlap with the unnormalized Trinity assembly.
 
