@@ -1,0 +1,184 @@
+% Template for PLoS
+% Version 1.0 January 2009
+%
+% To compile to pdf, run:
+% latex plos.template
+% bibtex plos.template
+% latex plos.template
+% latex plos.template
+% dvipdf plos.template
+
+\documentclass[10pt,draft]{article}
+
+% amsmath package, useful for mathematical formulas
+\usepackage{amsmath}
+% amssymb package, useful for mathematical symbols
+\usepackage{amssymb}
+
+% graphicx package, useful for including eps and pdf graphics
+% include graphics with the command \includegraphics
+\usepackage{graphicx}
+
+% cite package, to clean up citations in the main text. Do not remove.
+\usepackage{cite}
+
+\usepackage{color} 
+
+% Use doublespacing - comment out for single spacing
+%\usepackage{setspace} 
+%\doublespacing
+
+
+% Text layout
+\topmargin 0.0cm
+\oddsidemargin 0.5cm
+\evensidemargin 0.5cm
+\textwidth 16cm 
+\textheight 21cm
+
+% Bold the 'Figure #' in the caption and separate it with a period
+% Captions will be left justified
+\usepackage[labelfont=bf,labelsep=period,justification=raggedright]{caption}
+
+% Use the PLoS provided bibtex style
+\bibliographystyle{plos2009}
+
+% Remove brackets from numbering in List of References
+\makeatletter
+\renewcommand{\@biblabel}[1]{\quad#1.}
+\makeatother
+
+
+% Leave date blank
+\date{}
+
+\pagestyle{myheadings}
+%% ** EDIT HERE **
+
+
+%% ** EDIT HERE **
+%% PLEASE INCLUDE ALL MACROS BELOW
+
+%% END MACROS SECTION
+
+\begin{document}
+
+% Title must be 150 characters or less
+\begin{flushleft}
+{\Large
+\textbf{Digital Normalization of Short Shotgun Sequences Facilitates
+{\em de novo} Sequence Assembly}
+}
+% Insert Author names, affiliations and corresponding author email.
+\\
+C. Titus Brown$^{1,\ast}$, 
+Adina Howe$^{2}$,
+Qingpeng Zhang$^{3}$,
+Alexis B. Pyrkosz$^{4}$,
+Timothy H. Brom$^{3}$
+\\
+\bf{1} Departments of Computer Science and Engineering/Microbiology and Molecular Genetics, Michigan State University, East Lansing, MI, USA
+\\
+\bf{2} Departments of Microbiology and Molecular Genetics/Crop and Soil Sciences, Michigan State University, East Lansing, MI, USA
+\\
+\bf{3} Department of Computer Science and Engineering, Michigan State University, East Lansing, MI, USA
+\\
+{\bf{4} USDA Avian Disease and Oncology Laboratory, East Lansing, MI, USA}
+\\
+$\ast$ E-mail: Corresponding ctb@msu.edu
+\end{flushleft}
+
+% Please keep the abstract between 250 and 300 words
+\section*{Abstract}
+
+{\bf Background:} Deep shotgun sequencing and analysis of genomes,
+transcriptomes, amplified single-cell genomes, and metagenomes enable
+the sensitive investigation of a wide range of biological
+phenomena. However, it is difficult to deal with the volume of data
+emerging from deep short-read sequencers, in part because of random
+and systematic sampling variation as well as many sequencing errors
+\cite{pubmed19482960,pubmed20211242}.
+These challenges have led to the development of entire new classes of
+short-read mapping tools such as Bowtie and BWA, as well as new de
+novo assemblers such as ABySS, Velvet, SOAPdenovo, ALL-PATHS, and SGA
+\cite{pubmed22068540,pubmed20211242,pubmed22156294}.
+Even newer assembly strategies for dealing with transcriptomes,
+single-cell genomes, and metagenomes have also emerged\cite{pubmed21572440,pubmed21926975,pubmed21685107}.  Despite these
+advances, algorithms and compute capacity continue to be challenged by
+the continuing improvements in sequencing technology \cite{pubmed22147368,
+pubmed20835789}.
+\\
+\\
+{\bf Methodology and Principal Findings:} We describe an approach we call
+digital normalization, a single-pass computational algorithm that
+reduces sampling variation and eliminates the majority of sequencing
+errors from deep sequencing data. Digital normalization substantially
+reduces the size of the data set and decreases the memory and time
+requirements for {\em de novo} sequence assembly without significantly
+impacting content of the generated contigs.  Moreover, for at least
+one single-cell data set, the post-normalization assembly exhibits a significant improvement in contiguity over previous best methods.
+\\
+\\
+{\bf Conclusions and Significance:} The digital normalization approach
+yields a systematic reduction in data size and errors, and can be used
+effectively prior to {\em de novo} sequence assembly.  We demonstrate its
+applicability to the assembly of microbial genomes, single-cell
+genomic data, and transcriptomic data.
+
+%\bibliography{foo}
+
+\begin{thebibliography}{10}
+
+\bibitem{pubmed19482960}
+M.~Pop.
+\newblock Genome assembly reborn: recent computational challenges.
+\newblock {\em Brief Bioinform}, 10(4):354--66, 2009.
+
+\bibitem{pubmed20211242}
+J.~Miller, S.~Koren, and G.~Sutton.
+\newblock Assembly algorithms for next-generation sequencing data.
+\newblock {\em Genomics}, 95(6):315--27, 2010.
+
+\bibitem{pubmed22068540}
+P.~Compeau, P.~Pevzner, and G.~Tesler.
+\newblock How to apply de {B}ruijn graphs to genome assembly.
+\newblock {\em Nat Biotechnol}, 29(11):987--91, 2011.
+
+\bibitem{pubmed22156294}
+Simpson J, Durbin R (2012) Efficient de novo assembly of large genomes using
+  compressed data structures.
+\newblock Genome Res.
+
+\bibitem{pubmed21572440}
+Grabherr M, Haas B, Yassour M, Levin J, Thompson D, et~al. (2011) Full-length
+  transcriptome assembly from rna-seq data without a reference genome.
+\newblock Nat Biotechnol 29: 644-52.
+
+\bibitem{pubmed21926975}
+Chitsaz H, Yee-Greenbaum J, Tesler G, Lombardo M, Dupont C, et~al. (2011)
+  Efficient de novo assembly of single-cell bacterial genomes from short-read
+  data sets.
+\newblock Nat Biotechnol 29: 915-21.
+
+\bibitem{pubmed21685107}
+Y.~Peng, H.~Leung, S.~Yiu, and F.~Chin.
+\newblock Meta-IDBA: a de Novo assembler for metagenomic data.
+\newblock {\em Bioinformatics}, 27(13):i94--i101, 2011.
+
+\bibitem{pubmed22147368}
+S.~Salzberg, A.~Phillippy, A.~Zimin, D.~Puiu, T.~Magoc, S.~Koren, T.~Treangen,
+  M.~Schatz, A.~Delcher, M.~Roberts, G.~Marcais, M.~Pop, and J.~Yorke.
+\newblock Gage: A critical evaluation of genome assemblies and assembly
+  algorithms.
+\newblock {\em Genome Res}, 2011.
+
+\bibitem{pubmed20835789}
+Nagarajan N, Pop M (2010) Sequencing and genome assembly using next-generation
+  technologies.
+\newblock Methods Mol Biol 673: 1-17.
+
+
+\end{thebibliography}
+
+\end{document}
+

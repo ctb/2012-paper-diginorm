@@ -87,9 +87,9 @@
 % Title must be 150 characters or less
 \begin{flushleft}
 {\Large
-\textbf{Digital Normalization of Short Shotgun Sequences Facilitates
-{\em de novo} Sequence Assembly}
-}
+\textbf{Digital normalization of shotgun reads reduces sampling variation, removes
+errors, and scales {\em de novo} assembly
+}}
 % Insert Author names, affiliations and corresponding author email.
 \\
 C. Titus Brown$^{1,\ast}$, 
@@ -263,102 +263,79 @@ the quality of sensitivity of {\em de novo} assembly.
 % Results and Discussion can be combined.
 \section*{Results}
 
-\subsection*{Median k-mer abundance of a read is a good estimator of coverage}
+\subsection*{Estimating sequencing depth without a reference genome}
 
-Suppose that we have a file of short reads that are randomly sampled
-without error from a non-repetitive source genome, and we want to know
-the number of times a specific genomic location is represented in the
-reads.  This number, known as the coverage, is typically estimated by
-assembling a reference sequence, mapping the short reads back to this
-reference, and counting the number of reads that map to the location.
-However, this requires assembling a reference sequence, which can be
-computationally expensive.  Can we estimate the coverage of a source
-genomic region solely from the reads, without having access to a
-reference?
+Short-read assembly requires deep sequencing to ensure systematic
+sampling of the source genome, because shotgun sequencing is subject
+to both random sampling variation and systematic sequencing biases.
+For example, 100x sampling of a human genome is required for recovery
+of XX\% or more of the genome.  In principle much of this
+high-coverage data is redundant and could be eliminated without
+consequence to the final assembly, but determining which reads are
+redundant requires a per-read estimate of coverage.  However,
+traditional measures of coverage map reads to the reference sequence
+in order to determine coverage.  This presents a chicken-and-egg
+problem: in order to determine which regions are undersampled, we must
+already have an assembly!
 
-One approach to estimating coverage is to select a read overlapping
-the location of interest, and then apply the following
-procedure. First, choose a number $k$ such that k-mers -- words of
-length $k$ -- are unique in the single-copy source genome; a k-mer
-size of 20 usually serves \cite{pubmed12902383,pubmed19814784}.  Next, for each
-k-mer in the selected read, calculate the number of times that the
-k-mer appears in {\em any} read across the entire data set.  The
-abundance of these k-mers will represent the true depth of sampling of
-the source genome for each k-mer.  We can then estimate the sampling
-rate or coverage of the region to which the read belongs by
-calculating a summary statistic such as the median of the
-read's k-mer abundance distribution: see Figure \ref{fig:rankabund},
-``no errors'' line. This approach relies on the observation that
-because reads come from a single location in the genome, the
-abundances of non-repetitive k-mers within the read are correlated.
-The median provides an estimator that is robust to extreme abundance
-values stemming from repeats.
+We may calculate a {\em reference-free} estimate of coverage by
+looking at the k-mer abundance distribution within individual reads.
+First, observe that k-mers, DNA words of a fixed length $k$, tend to
+have similar abundances within a read: this is a well-known property
+of k-mers that stems from each read coming from a single source
+molecule of DNA.  The more times a region is sequenced, the higher the
+abundance of k-mers from that region would be.  In the absence of
+errors, then, the average k-mer abundance could be used as an estimate
+of the depth of coverage for a particular read (Figure
+\ref{fig:rankabund}, ``no errors'' line).  However, when reads contain
+random substitution or indel errors from sequencing, the k-mers
+overlapping these errors will be of lower abundance; this feature has
+been used in k-mer based error correction approaches.  A single
+substitution will introduce $k$ low-abundance k-mers within a read,
+skewing the average k-mer abundance downwards (Figure
+\ref{fig:rankabund}, ``single substitution error'' line).  However,
+for small $k$ and long reads of length $L$, a single substitution
+error will not skew the {\em median} k-mer abundance; in fact, as long
+as $L > 3k-1$, the median k-mer abundance will be insensitive to a
+single error.  Only when multiple substitution errors are found in a
+single read will the median k-mer abundance be affected (Figure
+\ref{fig:rankabund}, ``multiple substitution errors'').
 
-We can extend this estimation technique to reads sampled {\em with}
-error by observing that each single-base miscall or indel changes no
-more than $k$ k-mers in the read (see Figure \ref{fig:rankabund}).  If
-the errors are random and $k$ is large, these k-mers will be low
-abundance in the read data set.  So, if we order the k-mers in a read
-by their abundance across the entire data set, only the abundance of
-the first $k$ ranked k-mers will be affected by a single error, and at
-most the first $2k$ ranked k-mers will be affected by a pair of
-errors.  The median of the k-mer rank-abundance distribution will have
-rank $(l - k + 1) / 2$; this is greater than $k$ for $l > 3k-1$, and
-greater than $2k$ for $l > 5k-1$.  Thus for read lengths of 76 bases
-or longer, and a k-mer size of 20, the median k-mer abundance will
-ignore low abundances caused by a single substitution error; for a read
-length of 100, and a k-mer size of 20, the median k-mer abundance will
-be robust to two substitution errors.
+Using a simple implementation of a CountMin Sketch data structure
+(@@ref, Methods), we see that median k-mer abundance correlates well
+with mapping-based coverage for artificial and real genomic data sets.
+Figure \ref{fig:random} shows a strong correlation between median k-mer abundance and
+mapping-based coverage both for simulated 100-base reads generated with 1\%
+error from a 400kb artificial genome sequence (Figure \ref{fig:random}a, $r^2 =
+0.79$), as well as for real short-read data from {\em E. coli} (Figure
+\ref{fig:random}b, $r^2 = 0.80$).  In Figure \ref{fig:transcripts}, we see that the correlation between
+median k-mer abundance and mapping-based coverage also holds for
+abundance-biased data, both simulated (Figure \ref{fig:transcripts}a, $r^2 = 0.93$) and
+real mouse transcriptome data (Figure \ref{fig:transcripts}b, $r^2 = 0.90$); note log-log
+axes.  Points that lie above the $x=y$ line represent reads that
+contain high-abundance k-mers that skew the median k-mer abundance
+upwards, while reads below the $x=y$ line represent reads with many
+errors.  These error-containing reads can still be accurately mapped,
+but the errors interfere with the median k-mer abundance.
 
-We can therefore use the median k-mer abundance of a read, measured
-across the entire read data set, as an estimator of sampling depth for
-the region represented by the read. How well does median k-mer
-abundance correlate with the abundance calculated from read mapping?
-In Figure \ref{fig:random}a, we show that for simulated 100-base reads
-from an artificial (non-repetitive) genome of 400kb, sampled with a
-1\% per-base error rate, the median 20-mer abundance matches both the
-true coverage and the estimated coverage obtained from mapping the
-reads back to the genome with bowtie ($r^2 = 0.79$).  Can we apply
-this approach to reads from real genomes?
+Thus the median k-mer abundance of a read is a good estimator of
+coverage, for several samples.  We next investigate ways of using this
+estimator to determine which reads are likely to be redundant and can
+therefore be eliminated.
 
-When we apply the median k-mer abundance measure to real reads sampled
-from a {\em E. coli} genome, we see the same strong correlation
-between median k-mer abundance and estimated coverage based on mapping
-\ref{fig:random}b ($r^2=0.80$).  Points below the diagonal represent
-reads with multiple errors that reduce the median k-mer count but can
-still be mapped accurately, while points above the diagonal contain
-high-abundance k-mers that skew the median k-mer count relative to
-the mapping coverage.
+\subsection*{Eliminating redundant reads reduces variation in sequencing depth}
 
-This same correlation also holds for reads sampled from a non-uniform
-molecular distribution such as transcriptome or metagenome shotgun
-sequencing.  Figure \ref{fig:transcripts}a shows that median k-mer
-abundance and number of mapped reads correlate for a simulated
-transcriptome with expression across 3 orders of magnitude ($r^2 =
-0.93$).  Figure \ref{fig:transcripts}b shows the same strong
-correlation for a mouse mRNAseq data set ($r^2 = 0.90$).
+We can use the median k-mer abundance to accumulate only informative
+reads, that is, reads that have low estimated coverage.
+Significantly, we can do this {\em progressively} and {\em without a
+  reference sequence}: neither a complete analysis of the data set nor
+a reference sequence is required.
 
-\subsection*{The median k-mer abundance can be used to remove redundant reads.}
-
-Short-read shotgun sequencing is typically done to great depth in order
-to achieve as complete genomic sampling as possible prior to assembly.
-However, many of the resulting reads will come from oversampled regions
-and will be redundant.
-We can now use the median k-mer abundance to progressively accumulate
-only informative (non-redundant) reads, that is, reads that add
-to estimated coverage.  Significantly, we can do this
-{\em without a reference sequence}: no prior reference sequence is required.
-
-Suppose we treat the read data set as an incoming stream of data
-consisting of reads which we can individually accept or reject.  For
-each read, we use the median k-mer abundance to estimate the coverage
-of that read based on the reads accumulated so far; if this estimated
-coverage is {\em below} a specified threshold, we accept the read, and
-otherwise we reject it.  Accepted reads are both saved and
-incorporated into the k-mer counts, while rejected reads are simply
-discarded.
-
-Algorithmically, we execute the following procedure:
+Suppose we set a coverage threshold $C$ past which we no longer wish
+to collect reads. If we treat the read data set as an incoming stream
+of data, we can accept or reject reads depending on whether they
+fall below or above this threshold.  Algorithmically we apply the
+following procedure:
 
 \begin{verbatim}
    for read in dataset:
@@ -368,83 +345,95 @@ Algorithmically, we execute the following procedure:
          discard(read)
 \end{verbatim}
 \noindent
-where only accepted reads contribute to the estimated coverage.  For
-any data set, this has the effect of discarding the majority of reads
-that contribute to coverage $>$ C, although overlapping reads may be
-accepted later on that push the estimated coverage of earlier reads
-above C.  Novel reads -- reads from undersampled regions, or those
-reads containing many errors -- will always be retained.
+where accepted reads contribute to the $\rm estimated_coverage$ function.
 
-In Figure \ref{fig:coverage}, we display the estimated coverage of a
-simulated genome and an {\em E. coli} genome for both raw and
-normalized data, using read multimapping.  From this,
-we see that digitally normalizing both simulated and real
-high-coverage data has the expected effect of normalizing the
-estimated coverage of the reads to C, not only for median k-mer
-abundance but for read multimapping.  For both simulated and real
-data, then, digital normalization downsamples the data set to only a
-subset of reads -- those reads that contribute to additional coverage
-below a certain threshold.  Digital normalization thus converts {\em
-  high random sampling} to {\em low systematic sampling}.
+For any data set with an average coverage $> 2C$, this has the effect
+of discarding the majority of reads.  Critically, low-coverage reads,
+especially reads from undersampled regions, will always be retained.
 
-At what rate are informative sequences retained?  For the {\em E. coli} data
-set, Figure \ref{fig:accumulate} shows the fraction of sequences
-retained by digital normalization as a function of the total number of
-reads examined when normalizing to C=20 at k=20.  There is a clear
+The net effect of this procedure is to shift the coverage distribution
+of data sets to the left, while systematically subsampling the
+coverage.  In Figure \ref{fig:coverage}, we display the estimated
+coverage of both a simulated genome and an {\em E. coli} genome for
+both pre- and post-normalization data sets, using read multimapping.
+From this, we see that digital normalization has the predicted effect
+of systematically shifting the estimated coverage of the reads; since
+the median k-mer abundance is generally lower than the coverage
+(Figure \ref{fig:rankabund}, \ref{fig:random}, and
+\ref{fig:transcripts}), the new average coverage is lower than C.
+
+@@Digital normalization thus
+converts {\em high random sampling} to {\em low systematic sampling}.
+
+At what rate are sequences retained?  For the {\em E. coli} data set,
+Figure \ref{fig:accumulate} shows the fraction of sequences retained
+by digital normalization as a function of the total number of reads
+examined when normalizing to C=20 at k=20.  There is a clear
 saturation effect showing that as more reads are examined, a smaller
 fraction of reads is retained; by 5m reads, approximately 50-100x
 coverage of {\em E. coli}, under 30\% of new reads are kept.  This
-demonstrates that only a very small amount of novelty (in the form of
-either new information, or the accumulation of significant errors) is
-being observed as sequencing depth increases, as we would expect.
+demonstrates that as expected, only a very small amount of novelty (in
+the form of either new information, or the accumulation of significant
+errors) is being observed with increasing sequencing depth.
 
 % @CTB figure 4b / transcriptome/mouse stuff?
 
-\subsection*{Digital normalization removes many sequencing errors}
+\subsection*{Digital normalization removes most sequencing errors}
 
-The per-base error rate of most next-generation sequencing technologies
-approaches 1-2\%.  
-These
-errors dramatically affect the total number of k-mers; for example, in the
-simulated genomic data of 200x, a 1\% error rate leads to more than
-20-fold more 20-mers in the reads than are truly present in the genome,
-or approximately 20 new k-mers for each error (Table 1, row 1).
-This in turn dramatically increases the memory requirements for
-tracking and correcting k-mers (@cite arXiv percolation paper).
+The per-base error rate of most next-generation sequencing
+technologies approaches 1-2\%.  These errors dramatically affect the
+total number of k-mers; for example, in the simulated genomic data of
+200x, a 1\% error rate leads to more than 20-fold more 20-mers in the
+reads than are truly present in the genome, or approximately 20 new
+k-mers for each error (Table 1, row 1).  This in turn dramatically
+increases the memory requirements for tracking and correcting k-mers
+(@cite arXiv percolation paper).  This is a well-known problem
+with de Bruijn graph approaches, in which erroneous nodes or edges quickly
+come to dominate deep sequencing data sets (cite memory limits paper).
 
 When we perform digital normalization on such a data set, we eliminate
-the vast majority of these k-mers (Table 1, row 1).  Intuitively, this is
-because we are accepting or rejecting individual reads; in going from
-200x random coverage to 20x systematic coverage, we are discarding
-80\% of the reads containing 62\% of the errors (Table \ref{tab:normC20}, row 1).
-For reads taken from a biased abundance distribution, such as with
-mRNAseq, we also discard many reads, and hence many errors (Table \ref{tab:normC20}, row 2).
-Conveniently, in doing so we retain nearly all real k-mers -- in other words,
-we are discarding {\em data} but not {\em information}.
+the vast majority of these k-mers (Table \ref{tab:normC20}, row 1).  This
+is because we are accepting or rejecting individual reads; in going
+from 200x random coverage to 20x systematic coverage, we are
+discarding 80\% of the reads containing 62\% of the errors (Table
+\ref{tab:normC20}, row 1).  For reads taken from a biased abundance
+distribution, such as with mRNAseq, we also discard many reads, and
+hence many errors (Table \ref{tab:normC20}, row 2).  Conveniently, in
+doing so we retain nearly all {\em real} k-mers -- in other words, we are
+discarding {\em data} but not {\em information}.
 
-During the initial data set reduction we can count the k-mers in the
-accepted reads.  With this information we can then execute a second pass
-across the accepted reads in which we trim reads at low-abundance
-k-mers, thus removing another set of likely errors.  Following this
-second pass error reduction, we can then execute a second round of
-digital normalization that further eliminates redundant data; this
-three-pass protocol eliminates some additional errors, at the cost of
-very few real k-mers (Table \ref{tab:normC5}).
+This rather dramatic elimination of erroneous k-mers is a consequence
+of the high error rate: with a 1\% per-base substitution error rate,
+each 100-bp read will, on average, have 1 substitution error. Each of
+these substitution errors will introduce up to $k$ potentially novel
+k-mers.  Thus, for each read we discard as redundant, we also
+eliminate up to $k$ novel k-mers.
+
+We may further eliminate erroneous k-mers by trimming low-abundance
+k-mers.  During the initial data set reduction we count the k-mers in
+the accepted reads.  With this information we can then execute a
+second pass across the accepted reads in which we trim reads at
+low-abundance k-mers.  This removes another set of likely errors.
+Following this second pass error reduction, we can then execute a
+second round of digital normalization that further eliminates
+redundant data.  This three-pass protocol eliminates some additional
+errors and results in a further decrease in data set size, at the cost
+of very few real k-mers (Table \ref{tab:normC5}).
 
 Why use this three-pass protocol rather than simply normalizing to the
 lowest desired coverage in the first pass?  We find that error
 trimming after single-pass normalization to a coverage of $\tilde 5$
 removes many more real k-mers, because there will be many regions in
-the genome that by chance have yielded 5 reads with errors in them;
-these reads are then trimmed in the abundance-trimming step,
-eliminating coverage of the corresponding regions.  By normalizing
+the genome that by chance have yielded 5 reads with errors in them; if
+these reads are trimmed in the abundance-trimming step, this
+eliminates coverage of the corresponding regions.  By normalizing
 first to a higher coverage of 20, removing errors, and only then
 reducing coverage to 5, digital normalization can still recover reads
 for most regions.  Computationally, the three-pass protocol is not
 considerably more expensive than the single-pass protocol: the first
 pass of digital normalization discards substantial amounts of data as
-well as many erroneous k-mers, so later passes are substantially less time
-and memory intensive than the first pass.
+well as many erroneous k-mers, so later passes are substantially less
+time and memory intensive than the first pass.
 
 Interestingly, this three-pass protocol removed many more real k-mers
 from the simulated mRNAseq data than from the simulated genome (351 of
@@ -463,15 +452,16 @@ effect is negligible, but the simulated transcriptome was generated as
 genomic simulation, which presents much more opportunity for k-mer
 loss from the ends of sequences.
 
-While the three-pass protocol is very effective at removing erroneous k-mers,
-for shallow samples it may be too stringent.  For example, the mouse
-mRNAseq data set contains only 100m reads, which may not be enough to
-thoroughly sample the rarest molecules; in this case the abundance trimming
-may remove real k-mers as well as erroneous k-mers.  Therefore we only
-apply the three-pass protocol to extremely deep genome samples below,
-and use the single-pass digital normalization for the yeast and mouse transcriptomes.
+While the three-pass protocol is very effective at removing erroneous
+k-mers, for shallow samples it may be too stringent.  For example, the
+mouse mRNAseq data set contains only 100m reads, which may not be
+enough to thoroughly sample the rarest molecules; in this case the
+abundance trimming may remove real k-mers as well as erroneous k-mers.
+Therefore we only apply the three-pass protocol to extremely deep
+genome samples below, and use the single-pass digital normalization
+for the yeast and mouse transcriptomes.
 
-\subsection*{Digital normalization facilitates {\em de novo} assembly of genomic data}
+\subsection*{Digital normalization scales assembly of microbial genomes}
 
 We applied the three-pass digital normalization and error trimming
 protocol to real data sets from Chitsaz et al (2011).  The data sets
@@ -511,7 +501,7 @@ with Velvet-SC in terms of sensitivity.
 
 % @@ tables or anything?
 
-\subsection*{Digital normalization facilitates {\em de novo} assembly of transcriptomes}
+\subsection*{Digital normalization scales assembly of transcriptomes}
 
 We next applied single-pass digital normalization to published yeast
 and mouse mRNAseq data sets, reducing them to 20x coverage at k=20
