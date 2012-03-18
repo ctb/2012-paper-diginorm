@@ -8,12 +8,10 @@
 % reviewers: schatz, pop, durbin, pevzner.
 
 % @@add real cost of seq paper
+% @@add commentary on median < actual; figure 4
+% @@add commentary on trinity table / k-mer loss.
 
 % @@spellcheck!
-% VERIFY coverage figure; 0 coverage
-% todo:
-%   3-pass trinity/oases
-%   mouse k-mer foo
 % @schizo mapping coverage graph for mrnaseq?
 % @@graph of k-mer count vs data
 %
@@ -209,7 +207,7 @@ sequencing has been applied to single cell genomes, transcriptomes,
 and metagenomes, yet another generation of assemblers has emerged to
 handle reads from very abundance-biased populations of molecules;
 these tools, including Trinity, Oases, MetaVelvet, Meta-IDBA, and
-Velvet-SV, adopt local models of sequence coverage to help build
+Velvet-SC, adopt local models of sequence coverage to help build
 assemblies \cite{pubmed21572440,pubmed22368243,metavelvet,pubmed21685107,pubmed21926975}.  Because these tools all rely on k-mer approaches and
 require exact matches between sequences, their performance is
 extremely sensitive to the number of errors present in the underlying
@@ -423,7 +421,7 @@ of very few real k-mers (Table \ref{tab:normC5}).
 
 Why use this three-pass protocol rather than simply normalizing to the
 lowest desired coverage in the first pass?  We find that error
-trimming after single-pass normalization to a coverage of $\tilde 5$
+trimming after single-pass normalization to a coverage of $\approx 5$
 removes many more real k-mers, because there will be many regions in
 the genome that by chance have yielded 5 reads with errors in them; if
 these reads are trimmed in the abundance-trimming step, this
@@ -592,7 +590,7 @@ eliminates many errors, which helps scale downstream analyses further.
 Digital normalization is similar in concept to experimental
 normalization, which has been used for mRNA sequencing
 \cite{pubmed8889548,pubmed7937745}. However, digital normalization is
-applied computionally -- after sequencing.  In contrast to
+applied computationally -- after sequencing.  In contrast to
 experimental normalization, which affects the source molecule, digital
 normalization still requires deep sequencing to sample rare molecules;
 but digital normalization confers several advantages over experimental
