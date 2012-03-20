@@ -1,4 +1,14 @@
 *~
+diginorm.aux
+diginorm.log
+diginorm.pdf
+abstract.aux
+abstract.bbl
+abstract.blg
+abstract.log
+abstract.pdf
+diginorm.bbl
+diginorm.blg
 pipeline/genome-reads.fa
 pipeline/genome-reads.fa.bam
 pipeline/genome-reads.fa.counts.cmp

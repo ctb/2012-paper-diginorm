@@ -3,7 +3,7 @@
 
 % send final to: gasser, pws, gpgc, woyke, cheng, dodgson, dworkin, hana,
 % dray, foster, wilson, tulin/smith, tringe, mortazavi, wold, brett mcmillen,
-% deepakh, itai, usda pm, indiana person? (chinese guy), balaji
+% deepakh, itai, usda pm, indiana person? (chinese guy), balaji, punch.
 
 % reviewers: schatz, pop, durbin, pevzner.
 
@@ -123,7 +123,7 @@ novo assemblers such as ABySS, Velvet, SOAPdenovo, ALL-PATHS, and SGA.
 Even newer assembly strategies for dealing with transcriptomes,
 single-cell genomes, and metagenomes have also emerged.  Despite these
 advances, algorithms and compute capacity continue to be challenged by
-the continuing improvements in sequencing technology.
+the continuing improvements in sequencing technology throughput.
 \\
 \\
 {\bf Methodology and Principal Findings:} We describe an approach we term
@@ -182,10 +182,10 @@ in shotgun data sets.
 The second problem with short-read shotgun sequencing is the high
 error rate.  Illumina GAII has a 1-2\% error rate in its sequences,
 yielding an average of one base error in every 100 bp of data
-\cite{pubmed19997069}.  These errors grow linearly with the amount of
-data generated and dominate novelty in high-coverage sequencing data
-sets.  Tracking this novelty and resolving errors is computationally
-expensive.
+\cite{pubmed19997069}.  The total number of errors grows linearly with
+the amount of data generated and usually dominate novelty in
+high-coverage sequencing data sets.  Tracking this novelty and
+resolving errors is computationally expensive.
 
 These two problems have combined to result in a significant challenge:
 it is now straightforward to generate data sets that cannot easily be
@@ -226,7 +226,7 @@ correcting errors in large data sets
 approach involves finding low-abundance fixed-length words, or k-mers,
 and treating them as likely errors; these errors can then be
 eliminated or ``corrected'' by changing them to similar k-mers that
-are in high abundance.  One challenge for all of these techniques is
+are in high abundance @@.  A challenge for all of these techniques is
 that they require at least two complete iterations across the data
 set: one iteration to collect abundance spectra, and a second to
 perform the trimming or correction.  For extremely large data sets,
@@ -265,7 +265,7 @@ Below, we introduce a reference-free estimator of per-read sequencing
 depth, and show that it correlates well with traditional depth estimates.
 We then describe a simple algorithm for discarding redundant reads and
 show that the resulting reduction in data does not significantly affect
-the quality of sensitivity of {\em de novo} assembly.
+the quality or sensitivity of {\em de novo} assembly.
 
 % Results and Discussion can be combined.
 \section*{Results}
@@ -1008,18 +1008,14 @@ data sets were always done on the same machine.
 % Do NOT remove this, even if you are not including acknowledgments
 \section*{Acknowledgments}
 
-%@@ Chris Hart, James M. Tiedje, USDA * 2, NSF, BEACON, Brian Haas.
-% MDA folk, Jared, Scott, Russell Neches.
-% postdoc fellow.
-
-%This work was funded in part by the DOE Great Lakes Bioenergy Research Center
-%(DOE Office of Science BER DE-FC02-07ER64494), Michigan State University
-%AgBioResearch and..I'm checking on the NIH one.
-
-% NSF Postdoctoral Fellowship Award # 0905961
-% ? and NIH grant UH3 DK083993.
-
-
+We thank Chris Hart, James M. Tiedje, Brian Haas, Jared Simpson, Scott
+Emrich, and Russel Neches for their insight and helpful technical
+commentary.  This work was supported in part by the USDA (AFRI
+Competitive Grant 2010-65205-20361), NSF (DBI-0939454 and
+IOS-0923812), as well as the DOE Great Lakes Bioenergy Research Center
+(DOE BER DE-FC02-07ER64494), MSU AgBio Research, and NIH grant UH3
+DK083993.  AH was supported by NSF Postdoctoral Fellowship Award
+\#0905961.
 
 %\section*{References}
 % The bibtex filename
@@ -1161,7 +1157,7 @@ requirements for transcriptome assembly.}}
 
 Data set & N reads pre/post & Assembly time pre/post & Assembly memory pre/post \\
  \hline \\
-Yeast (Oases) & 100m / 9.3m & 181m / 12m (15.1x) & 45.2gb / 8.9gb (5.1x) \\
+Yeast (Oases) & 100m / 9.3m & 181 min / 12 min (15.1x) & 45.2gb / 8.9gb (5.1x) \\
 Yeast (Trinity) & 100m / 9.3m & 887 min / 145 min (6.1x) & 31.8gb / 10.4gb (3.1x) \\
 Mouse (Oases) & 100m / 26.4m & 761 min/ 73 min (10.4x) & 116.0gb / 34.6gb (3.4x) \\
 Mouse (Trinity) & 100m / 26.4m & 2297 min / 634 min (3.6x) & 42.1gb / 36.4gb (1.2x) \\
