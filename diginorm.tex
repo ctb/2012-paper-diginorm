@@ -9,99 +9,42 @@
 % @long reads!
 % @error correction after diginorm <=> skewed abundance dists.
 
-% Template for PLoS
-% Version 1.0 January 2009
-%
-% To compile to pdf, run:
-% latex plos.template
-% bibtex plos.template
-% latex plos.template
-% latex plos.template
-% dvipdf plos.template
-
-\documentclass[10pt]{article}
-
-% amsmath package, useful for mathematical formulas
-\usepackage{amsmath}
-% amssymb package, useful for mathematical symbols
-\usepackage{amssymb}
-
-% graphicx package, useful for including eps and pdf graphics
-% include graphics with the command \includegraphics
+\documentclass{pnastwo}
+\pdfoutput=1
 \usepackage{graphicx}
 
-% cite package, to clean up citations in the main text. Do not remove.
-\usepackage{cite}
-
-\usepackage{color} 
-
-% Use doublespacing - comment out for single spacing
-%\usepackage{setspace} 
-%\doublespacing
-
-
-% Text layout
-\topmargin 0.0cm
-\oddsidemargin 0.5cm
-\evensidemargin 0.5cm
-\textwidth 16cm 
-\textheight 21cm
-
-% Bold the 'Figure #' in the caption and separate it with a period
-% Captions will be left justified
-\usepackage[labelfont=bf,labelsep=period,justification=raggedright]{caption}
-
-% Use the PLoS provided bibtex style
-\bibliographystyle{plos2009}
-
-% Remove brackets from numbering in List of References
-\makeatletter
-\renewcommand{\@biblabel}[1]{\quad#1.}
-\makeatother
-
-
-% Leave date blank
-\date{}
-
-\pagestyle{myheadings}
-%% ** EDIT HERE **
-
-
-%% ** EDIT HERE **
-%% PLEASE INCLUDE ALL MACROS BELOW
-
-%% END MACROS SECTION
 
 \begin{document}
 
-% Title must be 150 characters or less
-\begin{flushleft}
-{\Large
-\textbf{A single pass approach to reducing sampling variation, removing
-errors, and scaling {\em de novo} assembly of shotgun sequences}}
-% Insert Author names, affiliations and corresponding author email.
-\\
-C. Titus Brown$^{1,\ast}$, 
-Adina Howe$^{2}$,
-Qingpeng Zhang$^{3}$,
-Alexis B. Pyrkosz$^{4}$,
-Timothy H. Brom$^{3}$
-\\
-\bf{1} Departments of Computer Science and Engineering/Microbiology and Molecular Genetics, Michigan State University, East Lansing, MI, USA
-\\
-\bf{2} Departments of Microbiology and Molecular Genetics/Crop and Soil Sciences, Michigan State University, East Lansing, MI, USA
-\\
-\bf{3} Department of Computer Science and Engineering, Michigan State University, East Lansing, MI, USA
-\\
-{\bf{4} USDA Avian Disease and Oncology Laboratory, East Lansing, MI, USA}
-\\
-$\ast$ E-mail: Corresponding ctb@msu.edu
-\end{flushleft}
+\title{A single pass approach to reducing sampling variation, removing
+errors, and scaling {\em de novo} assembly of shotgun sequences}
+
+\author{
+C. Titus Brown
+\affil{1}{Computer Science and Engineering, Michigan State University, East Lansing, MI, United States}
+\affil{2}{Microbiology and Molecular Genetics, Michigan State University, East Lansing, MI, United States}
+\footnote{Corresponding author: ctb@msu.edu}
+\and
+Adina Howe
+\affil{2}{}
+\affil{3}{Crop and Soil Sciences, Michigan State University, East Lansing, MI, United States}
+Qingpeng Zhang
+\and
+\affil{1}{}
+Alexis B. Pyrkosz
+\affil{4}{USDA Avian Disease and Oncology Laboratory, East Lansing, MI, USA}
+\and
+Timothy H. Brom
+\affil{1}{}
+}
+
+\maketitle
+
+\begin{article}
 
 % Please keep the abstract between 250 and 300 words
-\section*{Abstract}
-
-{\bf Background:} Deep shotgun sequencing and analysis of genomes,
+\begin{abstract}
+Deep shotgun sequencing and analysis of genomes,
 transcriptomes, amplified single-cell genomes, and metagenomes enable
 the sensitive investigation of a wide range of biological
 phenomena. However, it is increasingly difficult to deal with the
@@ -114,9 +57,7 @@ transcriptomes, single-cell genomes, and metagenomes have also
 emerged.  Despite these advances, algorithms and compute capacity
 continue to be challenged by the continued improvements in sequencing
 technology throughput.
-\\
-\\
-{\bf Methodology and Principal Findings:} We describe an approach we term
+We describe an approach we term
 digital normalization, a single-pass computational algorithm that
 discards redundant data and both sampling variation and the number of errors
 present in deep sequencing data sets. Digital normalization substantially
@@ -124,9 +65,7 @@ reduces the size of data sets and accordingly decreases the memory and time
 requirements for {\em de novo} sequence assembly, all without significantly
 impacting content of the generated contigs.  In doing so, it converts
 high random coverage to low systematic coverage.
-\\
-\\
-{\bf Conclusions and Significance:} Digital normalization is an
+Digital normalization is an
 effective and efficient approach to normalizing coverage, removing errors,
 and reducing data set size for shotgun sequencing data sets.
 It is particularly useful for reducing the compute requirements for
@@ -134,13 +73,10 @@ It is particularly useful for reducing the compute requirements for
 of microbial genomes, amplified single-cell genomic data, and
 transcriptomic data.  The software is freely available for use and
 modification.
+\end{abstract}
+\keywords{de novo assembly | compression | error correction | k-mers}
 
-% Please keep the Author Summary between 150 and 200 words
-% Use first person. PLoS ONE authors please skip this step. 
-% Author Summary not valid for PLoS ONE submissions.   
-\section*{Author Summary}
-
-\section*{Introduction}
+\section{Introduction}
 
 The ongoing improvements in DNA sequencing technologies have led to a new
 problem: how do we analyze the resulting large sequence data sets
@@ -261,7 +197,7 @@ include an {\em E. coli} genomic data set, two single-cell microbial
 genomes, and yeast and mouse mRNAseq samples.
 
 % Results and Discussion can be combined.
-\section*{Results}
+\section{Results}
 
 \subsection*{Estimating sequencing depth without a reference assembly}
 
@@ -326,7 +262,7 @@ well with mapping-based estimates of read coverage.
 We next investigate ways of using this estimator to remove highly
 sampled regions prior to {\em de novo} assembly.
 
-\subsection*{Eliminating redundant reads reduces variation in sequencing depth}
+\subsection{Eliminating redundant reads reduces variation in sequencing depth}
 
 Deeply sequenced genomes will contain many highly covered loci.  For
 example, in a human genome sequenced to 100x average coverage, we would
@@ -389,7 +325,7 @@ errors) is being observed with increasing sequencing depth.
 
 % @CTB figure 4b / transcriptome/mouse stuff?
 
-\subsection*{Digital normalization retains information while discarding
+\subsection{Digital normalization retains information while discarding
 both data and errors}
 
 The per-base error rate of most next-generation sequencing
@@ -482,7 +418,7 @@ eliminating essentially all of the erroneous k-mers (Table \ref{tab:normC20},
 rows 4 and 5.)
 % @@CTB check
 
-\subsection*{Digital normalization scales assembly of microbial genomes}
+\subsection{Digital normalization scales assembly of microbial genomes}
 
 We applied the three-pass digital normalization and error trimming
 protocol to real data sets from Chitsaz et al (2011).  The data sets
@@ -524,7 +460,7 @@ Velvet-SC in terms of sensitivity.
 
 % @ tables or anything?
 
-\subsection*{Digital normalization scales assembly of transcriptomes}
+\subsection{Digital normalization scales assembly of transcriptomes}
 
 We next applied single-pass digital normalization to published yeast
 and mouse mRNAseq data sets, reducing them to 20x coverage at k=20
@@ -596,9 +532,9 @@ suggests that the primary sequence content for the transcriptome remains
 present in the normalized reads, although it is recovered with different
 effectiveness by the two assemblers.
 
-\section*{Discussion}
+\section{Discussion}
 
-\subsection*{Digital normalization discards redundant data and removes errors}
+\subsection{Digital normalization discards redundant data and removes errors}
 
 Digital normalization is a simple, single-pass, low-memory
 computational technique for removing redundant data from shotgun
@@ -636,7 +572,7 @@ assemblies are required to determine the best choice of parameters;
 digital normalization need only be performed once, and will speed up
 all successive assembly efforts.
 
-\subsection*{Digital normalization dramatically scales {\em de novo} assembly}
+\subsection{Digital normalization dramatically scales {\em de novo} assembly}
 
 The results from applying digital normalization to read data sets
 prior to {\em de novo} assembly are extremely good: digital normalization
@@ -701,7 +637,7 @@ transcriptome, providing long-term leverage on the problem of {\em de
 
 % @figure out how to make strong argument here for assembly.
 
-\subsection*{Digital normalization drops terminal k-mers and removes isoforms}
+\subsection{Digital normalization drops terminal k-mers and removes isoforms}
 
 Digital normalization is certainly not perfect -- some real
 information is discarded, including terminal k-mers and low-abundance
@@ -730,7 +666,7 @@ caused by the use of k-mers to detect similarity, and is one reason
 why exploring local alignment approaches (discussed below) may be a
 good future direction.
 
-\subsection*{Applying assembly algorithms to digitally normalized data}
+\subsection{Applying assembly algorithms to digitally normalized data}
 
 The assembly problem is challenging for several reasons: many
 formulations are NP-hard, and practical issues of both genome content
@@ -783,7 +719,7 @@ inexpensive generation of contigs from digitally normalized data could
 be used prior to a separate scaffolding step, such as those supported
 by \cite{pubmed20529929,pubmed21926123}.
 
-\subsection*{Conclusions}
+\subsection{Conclusions}
 
 Digital normalization is an effective demonstration of the general
 observation that much of short-read shotgun sequencing is redundant.
@@ -835,7 +771,7 @@ assemblies even without scaffolding.  However, in principle we see no
 reason that digital normalization cannot be applied to contig
 generation for eukaryotic genome assembly in the future.
 
-\subsection*{Digital normalization is widely applicable and computationally convenient}
+\subsection{Digital normalization is widely applicable and computationally convenient}
 
 Digital normalization can be applied {\em de novo} to {\em any}
 shotgun data set.  The approach is extremely computationally
@@ -881,25 +817,18 @@ entirely redundant sequences and retain only sequences containing
 
 % \section*{Misc foo}
 
-% \begin{verbatim}
-
-% \end{verbatim}
-
-% You may title this section "Methods" or "Models". 
-% "Models" is not a valid title for PLoS ONE authors. However, PLoS ONE
-% authors may use "Analysis" 
-\section*{Materials and Methods}
+\begin{materials}
 
 All online materials below are available electronically via
-{\tt http://ged.msu.edu/papers/2012-diginorm/}.
+ged.msu.edu/papers/2012-diginorm/.
 
-\subsection*{Data sets}
+\section{Data sets}
 
 The {\em E. coli}, {\em S. aureus}, and {\em Deltaproteobacteria} data
 sets were taken from Chitsaz et al. \cite{pubmed21926975}, and
-downloaded from {\tt http://bix.ucsd.edu/projects/singlecell/}.  The
+downloaded from bix.ucsd.edu/projects/singlecell/.  The
 mouse data set was published by Grabherr et al. \cite{pubmed21572440}
-and downloaded from {\tt http://trinityrnaseq.sf.net/}.  All data sets
+and downloaded from trinityrnaseq.sf.net/.  All data sets
 were used without modification.
 
 The simulated genome and transcriptome were generated from a uniform
@@ -913,14 +842,14 @@ were generated from the transcriptome at relative expression levels of
 probability to each expression group; these reads also had a 1\%
 per-base error.
 
-\subsection*{Scripts and software}
+\section{Scripts and software}
 
 All simulated data sets and all analysis summaries were generated by
-Python scripts, which are available at {\tt
-  http://github.com/ctb/2012-paper-diginorm/}.  Digital normalization
+Python scripts, which are available at 
+  github.com/ctb/2012-paper-diginorm/.  Digital normalization
 and k-mer analyses were performed with the khmer software package,
-written in C++ and Python, available at {\tt
-  http://github.com/ctb/khmer/}, tag '2012-paper-diginorm'.  khmer is
+written in C++ and Python, available at 
+  github.com/ctb/khmer/, tag '2012-paper-diginorm'.  khmer is
 Copyright (c) 2010 Michigan State University, and is free software
 available for distribution, modification, and redistribution under the
 BSD license.
@@ -933,19 +862,19 @@ Trinity, head of branch on 2011.10.29.
 Graphs and correlation coefficients were generated using matplotlib
 v1.1.0, numpy v1.7, and ipython notebook v0.12 \cite{ipython}.  The
 ipython notebook file and data analysis scripts necessary to generate
-the figures are available at {\tt
-  http://github.com/ctb/2012-paper-diginorm/}.
+the figures are available at 
+  github.com/ctb/2012-paper-diginorm/.
 
-\subsection*{Results}
+\section{Results}
 
 The complete assemblies, both pre- and post-normalization, for the
 {\em E. coli}, {\em S. aureus}, the uncultured {\em
   Deltaproteobacteria}, mouse, and yeast data sets are available from
-{\tt http://ged.msu.edu/papers/2012-diginorm/}.
+ged.msu.edu/papers/2012-diginorm/.
 
 %%http://public.ged.msu.edu.s3-website-us-east-1.amazonaws.com/molgula/
 
-\subsection*{k-mer analysis parameters}
+\section{k-mer analysis parameters}
 
 The khmer software uses a CountMin Sketch data structure to count
 k-mers, which requires a fixed memory allocation
@@ -953,7 +882,7 @@ k-mers, which requires a fixed memory allocation
 that the calculated false positive rate was below 0.01.  By default k
 was set to 20.
 
-\subsection*{Read coverage estimates and comparisons}
+\section{Read coverage estimates and comparisons}
 
 Genome and transcriptome coverage was calculated by mapping all reads
 to the reference with bowtie ({\tt -a --best --strata}) and then
@@ -968,7 +897,7 @@ of Ns were removed after the analysis.
 Correlations between median k-mer counts and mapping coverage were
 computed using numpy.corrcoef; see calc-r2.py script.
 
-\subsection*{Normalization and assembly parameters}
+\section{Normalization and assembly parameters}
 
 For Table \ref{tab:dngenome}, the assembly k parameter for Velvet was
 k=45 for {\em E. coli}; k=41 for {\em S. aureus} single cell; and k=39
@@ -983,7 +912,7 @@ with {\tt -N 4 -x 2e9 -k 20}, consuming 8gb of memory.  Assembly of the
 single-pass normalized mRNAseq was done with Oases at k=21 (yeast) and k=19
 (mouse).
 
-\subsection*{Assembly overlap and analysis}
+\section{Assembly overlap and analysis}
 
 Assembly overlap was computed by first using NCBI BLASTN to build local
 alignments for two assemblies, then filtering for matches with bit scores
@@ -995,7 +924,7 @@ sequence filtering.
 TBLASTX comparison of the {\em Deltaproteobacteria} SAR324 sequence
 was done against another assembled SAR324 sequence, acc AFIA01000002.1.
 
-\subsection*{Compute requirement estimation}
+\section{Compute requirement estimation}
 
 Execution time was measured using real time from Linux bash 'time'.
 Peak memory usage was estimated either by the 'memusg' script from
@@ -1005,8 +934,10 @@ jobs run on MSU's HPC system.  While several different machines were
 used for analyses, comparisons between unnormalized and normalized
 data sets were always done on the same machine.
 
+\end{materials}
+
 % Do NOT remove this, even if you are not including acknowledgments
-\section*{Acknowledgments}
+\begin{acknowledgments}
 
 We thank Chris Hart, James M. Tiedje, Brian Haas, Jared Simpson, Scott
 Emrich, and Russell Neches for their insight and helpful technical
@@ -1017,16 +948,17 @@ IOS-0923812), as well as the DOE Great Lakes Bioenergy Research Center
 DK083993.  AH was supported by NSF Postdoctoral Fellowship Award
 \#0905961.
 
-%\section*{References}
-% The bibtex filename
+\end{acknowledgments}
+
+\bibliographystyle{abbrv}
 \bibliography{diginorm}
+
+\end{article}
 
 \newpage
 
-\section*{Figure Legends}
-
 \begin{figure}
-\centerline{\includegraphics[width=4in]{diginorm-ranks.pdf}}
+\centerline{\includegraphics[width=5in]{diginorm-ranks.pdf}}
 \caption{
 {\bf Representative rank-abundance distributions for 20-mers from 100-base reads with no errors,
 a read with a single substitution error, and a read with multiple
@@ -1036,8 +968,8 @@ substitution errors.}}
 
 \begin{figure}[!ht]
 \begin{center}
-\centerline{\includegraphics[width=4in]{diginorm-sim-genome.pdf}}
-\centerline{\includegraphics[width=4in]{diginorm-ecoli-genome.pdf}}
+\centerline{\includegraphics[width=5in]{diginorm-sim-genome.pdf}}
+\centerline{\includegraphics[width=5in]{diginorm-ecoli-genome.pdf}}
 \end{center}
 \caption{
 {\bf Mapping and k-mer coverage measures correlate for simulated genome
@@ -1049,8 +981,8 @@ E. coli} $r^2 = 0.80$.}
 
 \begin{figure}[!ht]
 \begin{center}
-\centerline{\includegraphics[width=4in]{diginorm-sim-transcr.pdf}}
-\centerline{\includegraphics[width=4in]{diginorm-mouse-transcr.pdf}}
+\centerline{\includegraphics[width=5in]{diginorm-sim-transcr.pdf}}
+\centerline{\includegraphics[width=5in]{diginorm-mouse-transcr.pdf}}
 \end{center}
 \caption{
 {\bf Mapping and k-mer coverage measures correlate for simulated transcriptome data as well as real mouse transcriptome data. Simulated data $r^2 = 0.93$;
@@ -1060,28 +992,28 @@ mouse transcriptome $r^2 = 0.90$.}
 \end{figure}
 
 \begin{figure}
-\centerline{\includegraphics[width=4in]{diginorm-coverage.pdf}}
+\centerline{\includegraphics[width=5in]{diginorm-coverage.pdf}}
 \caption{
 {\bf Coverage distribution of simulated and real genomes, calculated from mapped reads before and after normalization (k=20, C=20).}}
 \label{fig:coverage}
 \end{figure}
 
 \begin{figure}
-\centerline{\includegraphics[width=4in]{diginorm-accumulation.pdf}}
+\centerline{\includegraphics[width=5in]{diginorm-accumulation.pdf}}
 \caption{
 {\bf Fraction of reads kept when normalizing the {\em E. coli} dataset to C=20 at k=20.}}
 \label{fig:accumulate}
 \end{figure}
 
 \begin{figure}
-\centerline{\includegraphics[width=4in]{diginorm-endbias.pdf}}
+\centerline{\includegraphics[width=5in]{diginorm-endbias.pdf}}
 \caption{
 {\bf K-mers at the ends of sequences are lost during digital normalization.}}
 \label{fig:endloss}
 \end{figure}
 
 \begin{figure}
-\centerline{\includegraphics[width=4in]{schematic.pdf}}
+\centerline{\includegraphics[width=5in]{schematic.pdf}}
 \caption{}
 \label{fig:schematic}
 \end{figure}
