@@ -604,13 +604,14 @@ Digital normalization is a simple, single-pass, low-memory
 computational technique for removing redundant data from shotgun
 sequencing data sets.  It does so by using a reference-free estimator
 of per-read coverage, and discarding reads that raise coverage past a
-specified point, i.e. are redundant for assembly.  This has the effect
-of systematically downsampling high-coverage loci
-without losing information.  By discarding reads as redundant,
-digital normalization decreases the size of the data set that must be
-considered by downstream analyses such as {\em de novo} assembly.
-Moreover, by eliminating entire reads, digital normalization also
-eliminates many errors, which helps scale downstream analyses further.
+specified point, i.e. are redundant for assembly; see Figure
+\ref{fig:schematic}.  This has the effect of systematically
+downsampling high-coverage loci without losing information.  By
+discarding reads as redundant, digital normalization decreases the
+size of the data set that must be considered by downstream analyses
+such as {\em de novo} assembly.  Moreover, by eliminating entire
+reads, digital normalization also eliminates many errors, which helps
+scale downstream analyses further.
 
 Digital normalization is similar in concept to experimental
 normalization, which has been used for mRNA sequencing
@@ -1068,6 +1069,12 @@ mouse transcriptome $r^2 = 0.90$.}
 \caption{
 {\bf K-mers at the ends of sequences are lost during digital normalization.}}
 \label{fig:endloss}
+\end{figure}
+
+\begin{figure}
+\centerline{\includegraphics[width=4in]{schematic.pdf}}
+\caption{}
+\label{fig:schematic}
 \end{figure}
 
 \section*{Tables}
