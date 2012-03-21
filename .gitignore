@@ -77,8 +77,7 @@ pipeline/ecoli_ref-5m.fastq.kh
 pipeline/ecoli_ref-5m.fastq.kh.info
 pipeline/ecoli_ref-5m.fastq.map
 pipeline/ecoli_ref-5m.fastq.map.cov
-pipeline/ecoli_ref.fastq.bz2.keep
-pipeline/ecoli_ref.fastq.bz2.keep.map
+eipeline/ecoli_ref.fastq.bz2.keep.map
 pipeline/ecoli_ref.fastq.bz2.keep.map.cov
 pipeline/endbias-genome.txt
 pipeline/endbias-transcripts.txt
@@ -89,7 +88,6 @@ pipeline/genome-reads.fa.map.cov
 pipeline/mouse-5m.fq.counts.cmp
 pipeline/mouse-5m.fq.counts.kmer
 pipeline/mouse-5m.fq.counts.pickle
-pipeline/mouse-5m.fq.keep
 pipeline/mouse-5m.fq.keep.map
 pipeline/mouse-5m.fq.keep.map.cov
 pipeline/mouse-5m.fq.kh
@@ -106,3 +104,5 @@ pipeline/trinity-300.3.ebwt
 pipeline/trinity-300.4.ebwt
 pipeline/trinity-300.rev.1.ebwt
 pipeline/trinity-300.rev.2.ebwt
+pipeline/ecoli_ref.fastq.bz2.keep.map
+pipeline/mouse-5m.fq.keep

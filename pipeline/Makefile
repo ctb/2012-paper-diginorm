@@ -113,7 +113,7 @@ samfoo:
 	samtools faidx random.fa
 	samtools faidx transcripts.fa
 
-genome-reads.fa.map:
+genome-reads.fa.map: random.1.ebwt
 	bowtie -f -a --best --strata random genome-reads.fa > genome-reads.fa.map
 
 genome-reads.fa.sam:
