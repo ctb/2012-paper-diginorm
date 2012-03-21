@@ -24,7 +24,8 @@ all: genome-reads.fa.kh genome-reads.fa.keep \
 	transcript-reads.fa.keep.map \
 	mouse-5m.fq.keep.map.cov \
 	transcript-reads.fa.keep.map.cov \
-	endbias-genome.txt endbias-transcripts.txt
+	endbias-genome.txt endbias-transcripts.txt \
+	read15.ranks
 
 clean:
 	rm -f `cat clean-list.txt`
