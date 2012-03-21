@@ -106,3 +106,6 @@ pipeline/trinity-300.rev.1.ebwt
 pipeline/trinity-300.rev.2.ebwt
 pipeline/ecoli_ref.fastq.bz2.keep.map
 pipeline/mouse-5m.fq.keep
+pipeline/read15.ranks
+pipeline/read2.ranks
+pipeline/read3.ranks
