@@ -12,7 +12,6 @@ ecoli_ref-5m.fastq.kh
 ecoli_ref-5m.fastq.kh.info
 ecoli_ref-5m.fastq.map
 ecoli_ref-5m.fastq.map.cov
-ecoli_ref.fastq.bz2.keep
 ecoli_ref.fastq.bz2.keep.map
 ecoli_ref.fastq.bz2.keep.map.cov
 endbias-genome.txt
