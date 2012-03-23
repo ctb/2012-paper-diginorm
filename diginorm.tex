@@ -59,7 +59,7 @@ continue to be challenged by the continued improvements in sequencing
 technology throughput.
 We here describe an approach we term
 digital normalization, a single-pass computational algorithm that
-discards redundant data and both sampling variation and the number of errors
+discards redundant data and decreases both sampling variation and the number of errors
 present in deep sequencing data sets. Digital normalization substantially
 reduces the size of data sets and accordingly decreases the memory and time
 requirements for {\em de novo} sequence assembly, all without significantly
@@ -128,7 +128,7 @@ reference sequence \cite{pubmed19430453}.  In cases where a reference
 sequence does not exist and must be assembled {\em de novo} from the
 sequence data, a number of new assemblers have been written, including
 ABySS, Velvet, SOAPdenovo, ALLPATHS, and SGA
-\cite{pubmed20211242,pubmed21187386,pubmed22156294}.  These assemblers
+\cite{pubmed19251739,pubmed18349386,pubmed20511140,pubmed21187386,pubmed22156294}.  These assemblers
 rely on theoretical advances, including de Bruijn graphs and
 FM-indices, to store and traverse large amounts of data
 \cite{pubmed22068540,pubmed20529929}.  As short-read sequencing has
@@ -168,9 +168,10 @@ transcripts prior to sequencing\cite{pubmed8889548,pubmed7937745}.
 {\em Digital} normalization works after sequencing data has been
 generated, progressively removing high-coverage reads from shotgun
 data sets.  This normalizes average coverage to a specified value,
-reducing sampling variation while removing reads and errors contained
-within discarded reads.  The data and error reduction results in
-decreased computational requirements for {\em de novo} assembly.
+reducing sampling variation while removing reads, which also removes
+errors contained {\em within} those reads.  The data and error
+reduction results in decreased computational requirements for {\em de
+  novo} assembly.
 
 %The digital normalization algorithm is inspired by experimental
 %normalization techniques developed for cDNA library preparation.  In
@@ -210,7 +211,7 @@ In principle much of this high-coverage data is redundant and could be
 eliminated without consequence to the final assembly, but determining
 which reads to eliminate requires a per-read estimate of coverage.
 Traditional approaches estimate coverage by mapping reads to an
-assembly.  This presents a chicken-and-egg problem: in order to
+assembly.  This presents a chicken-and-egg problem: to
 determine which regions are oversampled, we must already have an
 assembly!
 
@@ -221,7 +222,7 @@ have similar abundances within a read: this is a well-known property
 of k-mers that stems from each read coming from a single source
 molecule of DNA.  The more times a region is sequenced, the higher the
 abundance of k-mers from that region would be.  In the absence of
-errors, then, the average k-mer abundance could be used as an estimate
+errors, average k-mer abundance could be used as an estimate
 of the depth of coverage for a particular read (Figure
 \ref{fig:rankabund}, ``no errors'' line).  However, when reads contain
 random substitution or indel errors from sequencing, the k-mers
@@ -267,7 +268,7 @@ sampled regions prior to {\em de novo} assembly.
 Deeply sequenced genomes will contain many highly covered loci.  For
 example, in a human genome sequenced to 100x average coverage, we would
 expect 50\% or more of the reads to have a coverage greater than 100.
-In practice, we should need only a few of these reads to actually assemble
+In practice, we need only a few of these reads to actually assemble
 the source locus.
 
 Using the median k-mer abundance estimator, we can examine each read
@@ -347,9 +348,9 @@ discarding 80\% of the reads containing 62\% of the errors (Table
 \ref{tab:normC20}, row 1).  For reads taken from a skewed abundance
 distribution, such as with mRNAseq, we similarly discard many reads,
 and hence many errors (Table \ref{tab:normC20}, row 2).  In addition,
-in most cases the process of sequencing discards more k-mers
-(parentheses, middle column) than does digital normalization (parentheses,
-fourth column)!
+in most cases the process of sequencing fails to recover more k-mers
+(parentheses, middle column) than digital normalization discards (parentheses,
+fourth column).
 
 The net effect is to retain nearly all {\em real} k-mers, while
 discarding the majority of erroneous k-mers -- in other words, digital
@@ -368,8 +369,8 @@ first counting all the k-mers in the accepted reads during digital
 normalization.  We can then execute a second pass across the accepted
 reads in which we eliminate the 3' ends of reads at low-abundance
 k-mers.  Following this error reduction pass, we can then execute a
-second round of digital normalization that further eliminates
-redundant data.  This three-pass protocol eliminates some additional
+second round of digital normalization (and a third pass) that further eliminates
+redundant data.  This three-pass protocol eliminates additional
 errors and results in a further decrease in data set size, at the cost
 of very few real k-mers in genomic data sets (Table \ref{tab:normC5}).
 
@@ -405,7 +406,7 @@ simulated transcriptome was generated as 100 transcripts of length
 presents much more opportunity for k-mer loss from the ends of
 sequences.
 
-While the three-pass protocol is very effective at removing erroneous
+While the three-pass protocol is effective at removing erroneous
 k-mers, for some samples it may be too stringent.  For example, the
 mouse mRNAseq data set contains only 100m reads, which may not be
 enough to thoroughly sample the rarest molecules; in this case the
@@ -430,7 +431,7 @@ digital normalization was performed in 1gb of memory and took about 1
 min per million reads.  For all three samples, the number of reads
 remaining after digital normalization was reduced by at least 30-fold,
 while the memory and time requirements were reduced 10-100x.  (For
-benchmarking, we used a more recent versions of Velvet rather than
+benchmarking, we used a more recent version of Velvet rather than
 Velvet-SC, because optimizations have been added to Velvet since the
 Velvet-SC fork.)
 
@@ -488,9 +489,9 @@ The resulting assemblies differed in summary statistics (Table
 \ref{tab:dntrans0}).  For both yeast and mouse, Oases lost 5-10\% of
 total transcripts and total bases.  However, Trinity {\em gained}
 transcripts when assembling the normalized yeast and mouse data,
-gaining about about 1\% in total bases on yeast and losing about 1\%
-on total bases in mouse.  Using a local-alignment-based overlap
-analysis (see Methods) we found very little difference in sequence
+gaining about 1\% of total bases on yeast and losing about 1\%
+of total bases in mouse.  Using a local-alignment-based overlap
+analysis (see Methods) we found little difference in sequence
 content between the pre- and post- normalization assemblies: for
 example, the normalized Oases assembly had a 98.5\% overlap with the
 unnormalized Oases assembly, while the normalized Trinity assembly had
@@ -669,7 +670,7 @@ good future direction.
 \subsection{Applying assembly algorithms to digitally normalized data}
 
 The assembly problem is challenging for several reasons: many
-formulations are NP-hard, and practical issues of both genome content
+formulations are computationally complex (NP-hard), and practical issues of both genome content
 and sequencing, such as repetitive sequence, polymorphisms, short
 reads and high error rates, challenge assembly approaches
 \cite{pubmed19580519}.  This has driven the development of heuristic
@@ -732,7 +733,7 @@ manner, we retain low coverage data.
 
 Normalization and assembly of data is significantly more
 computationally efficient than assembly of the raw reads, and results
-nearly identical assemblies for genomic data, and 98\%+ similar
+in nearly identical assemblies for genomic data, and 98\%+ similar
 assemblies for transcriptomic data.  Digital normalization should also
 be applicable to assembly of metagenomic data.  In this work, we focus
 on a reduction in the maximum {\em memory} requirements for assembly,
@@ -768,8 +769,8 @@ based on pairing information, is necessary for generating longer
 sequences in repeat-rich genomes.  We have only examined the results
 of digital normalization on microbial genomes, which can yield good
 assemblies even without scaffolding.  However, in principle we see no
-reason that digital normalization cannot be applied to contig
-generation for eukaryotic genome assembly in the future.
+reason why digital normalization cannot be applied to contig
+generation for eukaryotic genome assembly.
 
 \subsection{Digital normalization is widely applicable and computationally convenient}
 
@@ -788,7 +789,7 @@ possible to scale digital normalization across multiple machines
 
 The first pass of digital normalization is implemented as an online
 streaming algorithm in which reads are examined once.  Streaming
-algorithms are very useful for solving data analysis problems in which
+algorithms are useful for solving data analysis problems in which
 the data are too large to easily be transmitted, processed, or
 stored.  Here, we implement the streaming algorithm using a fixed
 memory data ``sketch'' data structure, CountMin Sketch.  By combining
@@ -806,13 +807,13 @@ robust foundation for further work \cite{muthukrishnan2005data}.
 The general concept of removing redundant {\em data} while retaining
 {\em information} underlies ``lossy compression'', an approach used
 widely in image processing and video compression.  The concept of
-lossy compression has very broad applicability in sequence analysis.
+lossy compression has broad applicability in sequence analysis.
 For example, digital normalization could be applied prior to homology
 search on unassembled reads, potentially reducing the computational
 requirements for e.g. BLAST and HMMER without loss of sensitivity.
 Digital normalization could also help merge multiple different read
-data sets from different read technologies, in order to discard
-entirely redundant sequences and retain only sequences containing
+data sets from different read technologies, by discarding
+entirely redundant sequences and retaining only sequences containing
 ``new'' information.  These approaches remain to be explored in the future.
 
 % \section*{Misc foo}
@@ -950,7 +951,10 @@ DK083993.  AH was supported by NSF Postdoctoral Fellowship Award
 
 \end{acknowledgments}
 
-\begin{thebibliography}{10}
+%\bibliographystyle{plos2009}
+%\bibliography{diginorm}
+
+\begin{thebibliography}{20}
 
 \bibitem{pubmed19997069}
 M.~Metzker.
@@ -990,6 +994,22 @@ L.~Stein.
 C.~Trapnell and S.~Salzberg.
 \newblock How to map billions of short reads onto genomes.
 \newblock {\em Nat Biotechnol}, 27(5):455--7, 2009.
+
+\bibitem{pubmed19251739}
+Simpson J, Wong K, Jackman S, Schein J, Jones S, et~al. (2009)
+\newblock Abyss: a parallel assembler for short read sequence data.
+\newblock Genome Res 19: 1117-23.
+
+\bibitem{pubmed18349386}
+D.~Zerbino and E.~Birney.
+\newblock Velvet: algorithms for de novo short read assembly using de bruijn
+  graphs.
+\newblock {\em Genome Res}, 18(5):821--9, 2008.
+
+\bibitem{pubmed20511140}
+Y.~Li, Y.~Hu, L.~Bolund, J.~Wang (2010)
+\newblock State of the art de novo assembly of human genomes from massively parallel sequencing data.
+\newblock Hum Genomics 4: 271-7.
 
 \bibitem{pubmed22156294}
 J.~Simpson and R.~Durbin.
@@ -1143,12 +1163,6 @@ B.~Langmead, C.~Trapnell, M.~Pop, and S.~Salzberg.
 \newblock Ultrafast and memory-efficient alignment of short dna sequences to
   the human genome.
 \newblock {\em Genome Biol}, 10(3):R25, 2009.
-
-\bibitem{pubmed18349386}
-D.~Zerbino and E.~Birney.
-\newblock Velvet: algorithms for de novo short read assembly using de bruijn
-  graphs.
-\newblock {\em Genome Res}, 18(5):821--9, 2008.
 
 \bibitem{ipython}
 F.~P\'erez and B.~E. Granger.
