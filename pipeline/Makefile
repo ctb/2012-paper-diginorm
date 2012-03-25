@@ -264,3 +264,6 @@ transcript-reads.fa.keep.map:
 
 transcript-reads.fa.keep.map.cov: transcript-reads.fa.keep.map
 	python mapping-genome-cov-3.py transcripts.fa transcript-reads.fa.keep.map transcript-reads.fa.keep.map.cov
+
+ecoli_ref.fastq.bz2.keep: ecoli_ref.fastq.bz2
+	$(KHMER)/scripts/normalize-by-median.py -R ecoli_ref.report -k 20 -N 4 -x 2e9 -C 20 ecoli_ref.fastq.bz2
