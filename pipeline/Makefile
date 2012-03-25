@@ -27,6 +27,11 @@ all: genome-reads.fa.kh genome-reads.fa.keep \
 	endbias-genome.txt endbias-transcripts.txt \
 	read15.ranks
 
+copydata:
+	rm -fr ../data/
+	mkdir ../data/
+	cp *.cov *.report *.ranks *.cmp *.txt ../data/
+
 clean:
 	rm -f `cat clean-list.txt`
 
