@@ -890,7 +890,8 @@ entirely redundant sequences and retain only sequences containing
 % authors may use "Analysis" 
 \section*{Materials and Methods}
 
-All online materials below are available electronically via http://@@@/.
+All online materials below are available electronically via
+{\tt http://ged.msu.edu/papers/2012-diginorm/}.
 
 \subsection*{Data sets}
 
@@ -919,9 +920,10 @@ Python scripts, which are available at {\tt
   http://github.com/ctb/2012-paper-diginorm/}.  Digital normalization
 and k-mer analyses were performed with the khmer software package,
 written in C++ and Python, available at {\tt
-  http://github.com/ctb/khmer/}, tag @@.  khmer is Copyright (c) 2010
-Michigan State University, and is free software available for
-distribution, modification, and redistribution under the BSD license.
+  http://github.com/ctb/khmer/}, tag '2012-paper-diginorm'.  khmer is
+Copyright (c) 2010 Michigan State University, and is free software
+available for distribution, modification, and redistribution under the
+BSD license.
 
 Mapping was performed with bowtie v0.12.7 \cite{pubmed19261174}.
 Genome assembly was done with velvet 1.2.01 \cite{pubmed18349386}.
@@ -936,9 +938,12 @@ the figures are available at {\tt
 
 \subsection*{Results}
 
-The complete assemblies from the {\em E. coli}, {\em S. aureus}, the
-uncultured {\em Deltaproteobacteria}, mouse, and yeast data sets are
-available from http://@@@/.
+The complete assemblies, both pre- and post-normalization, for the
+{\em E. coli}, {\em S. aureus}, the uncultured {\em
+  Deltaproteobacteria}, mouse, and yeast data sets are available from
+{\tt http://ged.msu.edu/papers/2012-diginorm/}.
+
+%%http://public.ged.msu.edu.s3-website-us-east-1.amazonaws.com/molgula/
 
 \subsection*{k-mer analysis parameters}
 
@@ -965,14 +970,18 @@ computed using numpy.corrcoef; see calc-r2.py script.
 
 \subsection*{Normalization and assembly parameters}
 
-In Table \ref{tab:dngenome}, the assembly k parameter for Velvet was:
+For Table \ref{tab:dngenome}, the assembly k parameter for Velvet was
 k=45 for {\em E. coli}; k=41 for {\em S. aureus} single cell; and k=39
-for {\em Deltaproteobacteria} single cell.  @@dn k, dn memory.
-{\em E. coli} kak was 31.  (@@@ TABLE) @@@
+for {\em Deltaproteobacteria} single cell.  Digital normalization
+on the three bacterial samples was done with {\tt -N 4 -x 2.5e8 -k 20},
+consuming 1gb of memory.  Post-normalization k parameters for Velvet
+assemblies were k=37 for {\em E. coli}, k=27 for {\em S. aureus}, and k=27 for {\em Deltaproteobacteria}.
 
-In Table \ref{tab:dntrans}, the assembly k parameter for Oases (both
-pre/post digital normalization) was k=23.  Trinity was used at the
-default k=26.
+For Table \ref{tab:dntrans}, the assembly k parameter for Oases was k=21 for yeast
+and k=23 for mouse.  Digital normalization on both mRNAseq samples was done
+with {\tt -N 4 -x 2e9 -k 20}, consuming 8gb of memory.  Assembly of the
+single-pass normalized mRNAseq was done with Oases at k=21 (yeast) and k=19
+(mouse).
 
 \subsection*{Assembly overlap and analysis}
 
