@@ -251,7 +251,7 @@ mouse-5m.fq.map.cov: mouse-5m.fq.map
 
 
 mouse-5m.fq.keep: mouse-5m.fq
-	python /u/t/dev/khmer/scripts/normalize-by-median.py -k 20 -N 4 -x 1e9 mouse-5m.fq
+	python $(KHMER)/scripts/normalize-by-median.py -k 20 -N 4 -x 1e9 mouse-5m.fq
 
 mouse-5m.fq.keep.map: mouse-5m.fq.keep
 	bowtie -f -a --best --strata trinity-300 mouse-5m.fq.keep > mouse-5m.fq.keep.map
