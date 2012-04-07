@@ -10,6 +10,7 @@
 % @error correction could be applied at C=20 stage to mrnaseq
 % @long reads!
 % @error correction after diginorm <=> skewed abundance dists.
+% @@comparison with dnadiff/GAGE
 %
 
 % Faster sequencers, larger datasets, new challenges
@@ -71,12 +72,12 @@ continue to be challenged by the continued improvements in sequencing
 technology throughput.
 We here describe an approach we term
 digital normalization, a single-pass computational algorithm that
-discards redundant data and decreases both sampling variation and the number of errors
-present in deep sequencing data sets. Digital normalization substantially
-reduces the size of data sets and accordingly decreases the memory and time
+systematizes coverage from deep shotgun sequencing, thereby decreasing
+sampling variation as well as discarding redundant data and removing
+errors. Digital normalization substantially
+reduces the size of data sets and decreases the memory and time
 requirements for {\em de novo} sequence assembly, all without significantly
-impacting content of the generated contigs.  In doing so, it converts
-high random coverage to low systematic coverage.
+impacting content of the generated contigs.
 Digital normalization is an
 effective and efficient approach to normalizing coverage, removing errors,
 and reducing data set size for shotgun sequencing data sets.
