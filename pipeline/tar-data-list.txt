@@ -1,0 +1,10 @@
+pipeline/bacteria_mda_lane1.fastq.bz2
+pipeline/bacteria_mda_lane7.fastq.bz2
+pipeline/ecoliMG1655.fa
+pipeline/ecoli_ref-5m.fastq
+pipeline/ecoli_ref.fastq.bz2
+pipeline/mapping.txt
+pipeline/mouse-5m.fq
+pipeline/sar324_contigs_lane1.fa
+pipeline/staph-genome.fa
+pipeline/trinity-300.fa
