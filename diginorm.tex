@@ -1,16 +1,14 @@
 % reviewers: schatz, pop, durbin, pevzner.
 
-% @@add commentary on trinity table / k-mer loss.
 % @@spellcheck!
 % @graph of k-mer count vs data
 % @@add cortex ref.
 % @@add three Tringe refs
 %
-% @schizo mapping coverage graph for mrnaseq?
 % @error correction could be applied at C=20 stage to mrnaseq
-% @long reads!
 % @error correction after diginorm <=> skewed abundance dists.
-% @@comparison with dnadiff/GAGE
+% @long reads!
+% @comparison with dnadiff/GAGE
 %
 
 % Faster sequencers, larger datasets, new challenges
@@ -27,7 +25,7 @@
 %% metagenomics etc
 %% scale with sequence content etc.
 %% will trimble's arg
-%% Preprocessing RNA scaffolding, tip hat gene models, error corr
+%% Preprocessing RNA scaffolding, top hat gene models, error corr
 %% GAGE argues that quality of reads => quality of assembly.  we get good qual!
 %% nature review on de novo assembly
 
@@ -109,15 +107,14 @@ sampling. This is because shotgun sequencing samples randomly from the
 population of molecules; this sampling is biased by sample content and
 sample preparation, requiring even deeper sequencing. A human genome
 may require 100x coverage or more for near-complete sampling, leading
-to shotgun data sets 100 or more times the size of the human genome
-\cite{pubmed21187386}.  Since the lowest abundance molecule determines
-the depth of coverage required for complete sampling, transcriptomes
-and metagenomes containing rare transcripts and genomes can also
-require similarly deep sequencing.  Thus many shotgun data sets are
-also quite large.
+to shotgun data sets 300 GB or larger in size\cite{pubmed21187386}.
+Since the lowest abundance molecule determines the depth of coverage
+required for complete sampling, transcriptomes and metagenomes
+containing rare population elements can also require similarly
+deep sequencing.
 
 The second challenge to analyzing short-read shotgun sequencing is the
-high error rate.  For example, the Illumina GAII has a 1-2\% error
+high error rate.  For example, the Illumina GAII sequencer has a 1-2\% error
 rate, yielding an average of one base error in every 100 bp of data
 \cite{pubmed19997069}.  The total number of errors grows linearly with
 the amount of data generated, so these errors usually dominate
@@ -139,8 +136,8 @@ specifically to do ultra-fast short-read alignment to reference
 sequence \cite{pubmed19430453}.  In cases where a reference sequence
 does not exist and must be assembled {\em de novo} from the sequence
 data, a number of new assemblers have been written, including ABySS,
-Velvet, SOAPdenovo, ALLPATHS, and SGA
-\cite{pubmed19251739,pubmed18349386,pubmed20511140,pubmed21187386,pubmed22156294}.
+Velvet, SOAPdenovo, ALLPATHS, SGA, and Cortex
+\cite{pubmed19251739,pubmed18349386,pubmed20511140,pubmed21187386,pubmed22156294,cortex}.
 These assemblers rely on theoretical advances to store and assemble
 large amounts of data \cite{pubmed22068540,pubmed20529929}.  As
 short-read sequencing has been applied to single cell genomes,
@@ -151,7 +148,8 @@ Meta-IDBA, and Velvet-SC, adopt local models of sequence coverage to
 help build assemblies
 \cite{pubmed21572440,pubmed22368243,metavelvet,pubmed21685107,pubmed21926975}.
 In addition, several ad hoc strategies have also been applied to reduce
-variation in sequence content from molecular amplification techniques @@.
+variation in sequence content from whole-genome amplification
+\cite{pubmed19724646,pubmed22028825}.
 Because these tools all rely on k-mer approaches and require exact
 matches to construct overlaps between sequences, their performance is
 very sensitive to the number of errors present in the underlying data.
@@ -174,20 +172,21 @@ assembly or mapping
 
 Below, we introduce ``digital normalization'', a single-pass algorithm
 for elimination of redundant reads in data sets.  Critically, no
-reference data is needed.  Digital normalization is inspired by
-experimental normalization techniques developed for cDNA library
-preparation, in which hybridization kinetics are exploited to reduce
-the copy number of abundant transcripts prior to
-sequencing\cite{pubmed8889548,pubmed7937745}.  {\em Digital}
-normalization works after sequencing data has been generated,
-progressively removing high-coverage reads from shotgun data sets.
-This normalizes average coverage to a specified value, reducing
-sampling variation while removing reads, and also removing the many
-errors contained {\em within} those reads.  This data and error
-reduction results in decreased computational requirements for {\em de
-  novo} assembly.  Unlike experimental normalization where abundance
-information is experimentally removed, in digital normalization this
-information can be recovered from the unnormalized reads.
+reference sequence is needed to apply digital normalization.  Digital
+normalization is inspired by experimental normalization techniques
+developed for cDNA library preparation, in which hybridization
+kinetics are exploited to reduce the copy number of abundant
+transcripts prior to sequencing\cite{pubmed8889548,pubmed7937745}.
+{\em Digital} normalization works after sequencing data has been
+generated, progressively removing high-coverage reads from shotgun
+data sets.  This normalizes average coverage to a specified value,
+reducing sampling variation while removing reads, and also removing
+the many errors contained {\em within} those reads.  This data and
+error reduction results in dramatically decreased computational
+requirements for {\em de novo} assembly.  Moreover, unlike experimental
+normalization where abundance information is removed prior to sequencing,
+in digital normalization this information can be recovered from the
+unnormalized reads.
 
 % @@ where do I mention prior approaches?
 
@@ -208,12 +207,12 @@ information can be recovered from the unnormalized reads.
 %accumulate in the normalized data set, and we see a substantial
 %reduction in the total number of errors.
 
-We present a fixed-memory implementation of digital normalization that
-operates in time linear with the size of the input data.  We then
+We present here a fixed-memory implementation of digital normalization
+that operates in time linear with the size of the input data.  We then
 demonstrate its effectiveness for reducing compute requirements for
 {\em de novo} assembly on several real data sets.  These data sets
-include an {\em E. coli} genomic data set, two single-cell microbial
-genomes, and yeast and mouse mRNAseq samples.
+include an {\em E. coli} genomic data set, two single-cell
+MD-amplified microbial genomes, and yeast and mouse mRNAseq data sets.
 
 % Results and Discussion can be combined.
 \section{Results}
@@ -240,41 +239,32 @@ have similar abundances within a read: this is a well-known property
 of k-mers that stems from each read coming from a single source
 molecule of DNA.  The more times a region is sequenced, the higher the
 abundance of k-mers from that region would be.  In the absence of
-errors, average k-mer abundance could be used as an estimate
-of the depth of coverage for a particular read (Figure
-\ref{fig:rankabund}, ``no errors'' line).  However, when reads contain
-random substitution or indel errors from sequencing, the k-mers
-containing these errors will be of lower abundance; this feature is
-often used in k-mer based error correction approaches
-\cite{pubmed21114842}.  A single substitution will introduce $k$
-low-abundance k-mers within a read.  (Figure \ref{fig:rankabund},
-``single substitution error'' line).  However, for small $k$ and reads
-of length $L$, a single substitution error will not skew the {\em
-  median} k-mer abundance; in fact, as long as $L > 3k-1$, the median
-k-mer abundance will be insensitive to a single error.  Only when
-multiple substitution errors are found in a single read will the
-median k-mer abundance be affected (Figure \ref{fig:rankabund},
-``multiple substitution errors'').
+errors, average k-mer abundance could be used as an estimate of the
+depth of coverage for a particular read (Figure \ref{fig:rankabund},
+``no errors'' line).  However, when reads contain random substitution
+or indel errors from sequencing, the k-mers overlapping these errors
+will be of lower abundance; this feature is often used in k-mer based
+error correction approaches \cite{pubmed21114842}.  For example, a
+single substitution will introduce $k$ low-abundance k-mers within a
+read.  (Figure \ref{fig:rankabund}, ``single substitution error''
+line).  However, for small $k$ and reads of length $L$ where $L >
+3k-1$, a single substitution error will not skew the {\em median}
+k-mer abundance.  Only when multiple substitution errors are found in
+a single read will the median k-mer abundance be affected (Figure
+\ref{fig:rankabund}, ``multiple substitution errors'').
 
 Using a fixed-memory CountMin Sketch data structure to count k-mers
-(see Methods and \cite{countminsketch}), we see that median k-mer
+(see Methods and \cite{countminsketch}), we find that median k-mer
 abundance correlates well with mapping-based coverage for artificial
-and real genomic data sets.  Figure \ref{fig:random} shows a strong
-correlation between median k-mer abundance and mapping-based coverage
-both for simulated 100-base reads generated with 1\% error from a
-400kb artificial genome sequence (Figure \ref{fig:random}a, $r^2 =
-0.79$), as well as for real short-read data from {\em E. coli} (Figure
-\ref{fig:random}b, $r^2 = 0.80$).  In Figure \ref{fig:transcripts}, we
-see that the correlation between median k-mer abundance and
-mapping-based coverage also holds for abundance-skewed data, both
-simulated (Figure \ref{fig:transcripts}a, $r^2 = 0.93$) and real mouse
-transcriptome data (Figure \ref{fig:transcripts}b, $r^2 = 0.90$); note
-log-log axes.  Points that lie above the $x=y$ line represent reads
-that contain high-abundance k-mers that skew the median k-mer
-abundance upwards, while reads below the $x=y$ line represent reads
-with many errors.  These error-containing reads can still be
-accurately mapped, but the errors interfere with the median k-mer
-abundance.
+and real genomic data sets.  There is a strong correlation between
+median k-mer abundance and mapping-based coverage both for simulated
+100-base reads generated with 1\% error from a 400kb artificial genome
+sequence ($r^2 = 0.79$; also see Figure \ref{fig:random}a), as well as
+for real short-read data from {\em E. coli} ($r^2 = 0.80$, also see
+Figure \ref{fig:random}b).  This correlation also holds for simulated
+and real mRNAseq data: for simulated transcriptome data, $r^2 = 0.93$
+(Figure \ref{fig:transcripts}a), while for real mouse transcriptome
+data, $r^2 = 0.90$ (Figure \ref{fig:transcripts}b).
 
 %Thus we can see that the median k-mer abundance of a read correlates
 %well with mapping-based estimates of read coverage.
@@ -294,12 +284,12 @@ in the data set progressively to determine if it is high coverage.  At
 the beginning of a shotgun data set, we would expect many reads to be
 entirely novel and have a low estimated coverage; as we proceed
 through the data set, however, average coverage will increase and many
-reads will be from loci for which we already have many reads.
+reads will be from loci that we have already sampled sufficiently.
 
 Suppose we choose a coverage threshold $C$ past which we no longer
 wish to collect reads. If we only keep reads whose estimated coverage
 is less than $C$, and discard the rest, we will reduce the average
-coverage of the data set below $C$.  This procedure is
+coverage of the data set to $C$.  This procedure is
 algorithmically straightforward to execute: we examine each read's
 estimated coverage, and retain only those whose coverage is less than $C$.
 The following pseudocode provides one approach:
@@ -323,11 +313,12 @@ is to normalize the coverage distribution of data sets.  In Figure
   E. coli} genomic data set, a {\em S. aureus} single-cell
 MD-amplified data set, and an MD-amplified data set from an uncultured
 {\em Deltaproteobacteria}, calculated by mapping reads to the known or
-assembled reference genomes (see @@ for details).  The wide variation
-in coverage for the two MDA data sets is due to the amplification
-procedure @@.  After normalizing to a k-mer coverage of 20, the high
-coverage loci are systematically shifted to an average of XX@@, while
-low-coverage loci remain at their previous coverage.  This smooths
+assembled reference genomes (see \cite{pubmed21926975} for the data
+source).  The wide variation in coverage for the two MDA data sets is
+due to the amplification procedure \cite{pubmed17487184}.  After
+normalizing to a k-mer coverage of 20, the high coverage loci are
+systematically shifted to an average mapping coverage of 26, while
+lower-coverage loci remain at their previous coverage.  This smooths
 out coverage of the overall data set.
 
 %At what rate are sequences retained?  For the {\em E. coli} data set,
@@ -347,9 +338,9 @@ both data and errors}
 The per-base error rate of most next-generation sequencing
 technologies approaches 1-2\% \cite{pubmed19997069}.  These errors
 dramatically affect the total number of k-mers; for example, in the
-simulated genomic data of 200x, a 1\% error rate leads to more than
-20-fold more 20-mers in the reads than are truly present in the
-genome, or approximately 20 new k-mers for each error (Table 1, row
+simulated genomic data of 200x, a 1\% error rate leads to
+approximately 20 new k-mers for each error, yielding 20-fold more
+k-mers in the reads than are truly present in the genome (Table 1, row
 1).  This in turn dramatically increases the memory requirements for
 tracking and correcting k-mers \cite{pubmed21245053}.  This is a
 well-known problem with de Bruijn graph approaches, in which erroneous
@@ -357,25 +348,27 @@ nodes or edges quickly come to dominate deep sequencing data sets.
 
 When we perform digital normalization on such a data set, we eliminate
 the vast majority of these k-mers (Table \ref{tab:normC20}, row 1).
-This is because we are accepting or rejecting individual reads; in
-going from 200x random coverage to 20x systematic coverage, we are
-discarding 80\% of the reads containing 62\% of the errors (Table
+This is because we are accepting or rejecting entire reads; in
+going from 200x random coverage to 20x systematic coverage, we
+discard 80\% of the reads containing 62\% of the errors (Table
 \ref{tab:normC20}, row 1).  For reads taken from a skewed abundance
 distribution, such as with MDA or mRNAseq, we similarly discard many
 reads, and hence many errors (Table \ref{tab:normC20}, row 2).  In
-addition, in most cases the process of sequencing fails to recover
-more true k-mers (parentheses, middle column) than digital
-normalization discards (parentheses, fourth column).
+fact, in most cases the process of sequencing fails to recover
+more true k-mers (Table \ref{tab:normC20}, middle column, parentheses) than
+digital
+normalization discards (Table \ref{tab:normC20}, fourth column, parentheses).
 
 The net effect of digital normalization is to retain nearly all {\em
   real} k-mers, while discarding the majority of erroneous k-mers --
 in other words, digital normalization is discarding {\em data} but not
 {\em information}.  This rather dramatic elimination of erroneous
 k-mers is a consequence of the high error rate present in reads: with
-a 1\% per-base substitution error rate, each 100-bp read will have 1
-substitution error on average. Each of these substitution errors will
-introduce up to $k$ erroneous k-mers.  Thus, for each read we discard
-as redundant, we also eliminate an average of $k$ erroneous k-mers.
+a 1\% per-base substitution error rate, each 100-bp read will have an
+average of one substitution error. Each of these substitution errors
+will introduce up to $k$ erroneous k-mers.  Thus, for each read we
+discard as redundant, we also eliminate an average of $k$ erroneous
+k-mers.
 
 We may further eliminate erroneous k-mers by removing k-mers that are
 rare across the data set; these rare k-mers tend to result from
@@ -395,14 +388,14 @@ lowest desired coverage in the first pass?  We find that removing
 low-abundance k-mers after a single normalization pass to $C \approx
 5$ removes many more {\em real} k-mers, because there will be many
 regions in the genome that by chance have yielded 5 reads with errors
-in them. If these errors are removed in the abundance-trimming step,
+in them. If these erroneous k-mers are removed in the abundance-trimming step,
 coverage of the corresponding regions is eliminated.  By normalizing
 to a higher coverage of 20, removing errors, and only then reducing
-coverage to 5, digital normalization can retain reads covering most
-regions.  Note that the three-pass protocol is not considerably more
+coverage to 5, digital normalization can retain accurate reads for most
+regions.  Note that this three-pass protocol is not considerably more
 computationally expensive than the single-pass protocol: the first
 pass discards the majority of data and errors, so later passes are
-much less time and memory intensive than the first pass.
+less time and memory intensive than the first pass.
 
 Interestingly, this three-pass protocol removed many more real k-mers
 from the simulated mRNAseq data than from the simulated genome -- 351
@@ -419,21 +412,19 @@ due to edge effects.  In the case of the simulated genome, which was
 generated as one large chromosome, the effect is negligible, but the
 simulated transcriptome was generated as 100 transcripts of length
 500.  This added 99 end sequences over the genomic simulation, which
-presents much more opportunity for k-mer loss from the ends of
-sequences.
+in turn led to many more lost k-mers.
 
 While the three-pass protocol is effective at removing erroneous
 k-mers, for some samples it may be too stringent.  For example, the
 mouse mRNAseq data set contains only 100m reads, which may not be
 enough to thoroughly sample the rarest molecules; in this case the
-abundance trimming may remove real k-mers as well as erroneous k-mers.
+abundance trimming would remove real k-mers as well as erroneous k-mers.
 Therefore we only apply the three-pass protocol to extremely deep
 genome samples below, and use the single-pass digital normalization
 for the yeast and mouse transcriptomes.  For these two samples we can
 also see that the first-pass digital normalization is extremely effective,
 eliminating essentially all of the erroneous k-mers (Table \ref{tab:normC20},
 rows 4 and 5.)
-% @@CTB check
 
 \subsection{Digital normalization scales assembly of microbial genomes}
 
@@ -469,7 +460,7 @@ sequence was assembled only in the normalized samples.  Of the 30kb of
 missing sequence, only 10\% matched via TBLASTX to a nearby {\em
   Deltaproteobacteria} assembly, while more than 40\% of the
 additional 360kb matched to the same {\em Deltaproteobacteria} sample.
-This additional sequence likely represents additional real
+Therefore these additional contigs likely represents real
 sequence, suggesting that digital normalization is competitive with
 Velvet-SC in terms of sensitivity.
 
@@ -491,7 +482,7 @@ directly compared to the Trinity runtimes.)
 
 For both assemblers the computational resources necessary to complete
 an assembly were reduced (Table \ref{tab:dntrans}), but normalization
-had different effects on performance for different samples.  For the
+had different effects on performance for the different samples.  On the
 yeast data set, time and memory requirements were reduced
 significantly, as for Oases running on mouse.  However, while
 Trinity's runtime decreased by a factor of three on the normalized
@@ -565,8 +556,8 @@ tend to scale poorly with the number of reads: in particular, de
 Bruijn graph memory requirements scale linearly with the size of the
 data set due to the accumulation of errors, although others have
 similarly poor scaling behavior (e.g. quadratic time in the number of
-reads) \cite{@@,@@}.  By calculating per-locus coverage in a way that
-is partially refractory to errors, digital normalization converts
+reads) \cite{pubmed20211242}.  By calculating per-locus coverage in a way that
+is insensitive to errors, digital normalization converts
 genome assembly into a problem that scales with the complexity of the
 underlying sample - i.e. the size of the genome, transcriptome, or
 metagenome.
@@ -579,9 +570,11 @@ whole; rather, a partial ``sketch'' of the data set is retained and
 used for progressive filtering.  Online algorithms and sketch data
 structures offer significant opportunities in situations where data
 sets are too large to be conveniently stored, transmitted, or analyzed
-\cite{muthukrishnan2005data}.  This enables increasingly efficient
-downstream analyses, including e.g.  quantification of mRNAseq and
-homology search of large metagenomic data sets (@@pachter, @@MG-RAST)
+\cite{muthukrishnan2005data}.  This can enable increasingly efficient
+downstream analyses.
+Digital normalization can be applied in any situation where the
+abundance of particular sequence elements is either unimportant or can be
+recovered more efficiently after other processing, as in assembly.
 
 The construction of a simple, reference-free measure of coverage on a
 per-read basis also offers opportunities to analyze coverage and
@@ -590,19 +583,20 @@ sequencing is increasingly being applied to non-model organisms and
 ecological communities for which there are no reference sequences, and
 hence no good way to estimate underlying sequence complexity.  The
 median k-mer count technique presented here provides a method for
-determining community and transcript complexity as well as calculating
-the required sequencing depth for sensitive analyses.
+determining community and transcriptome complexity;
+it can also be used to progressively estimate sequencing depth.
 
-More pragmatically, digital normalization scales existing assembly
-techniques dramatically.  By reducing overall sampling variation,
-digital normalization could also lead to improved contig assembly,
-which may be happening in the case of MDA samples (see @@).  The data
-size reduction also may enable the application of
-overlap-layout-consensus assembly algorithms to short-read data.
-Overall, the reduction in data set size, memory requirements, and time
-complexity for contig assembly afforded by digital normalization could
-lead to the application of more complex heuristics to the assembly
-problem.
+More pragmatically, digital normalization also scales existing
+assembly techniques dramatically.  By reducing overall sampling
+variation, digital normalization could also lead to improved contig
+assembly, which may be happening in the case of the single-cell
+samples (see above).  The reduction in data set size afforded by
+digital normalization may also enable the application of more
+computationally expensive algorithms such as overlap-layout-consensus
+assembly approaches to short-read data.  Overall, the reduction in
+data set size, memory requirements, and time complexity for contig
+assembly afforded by digital normalization could lead to the
+application of more complex heuristics to the assembly problem.
 
 %X0. normalization
 %   => scales problem with size of data set
@@ -678,8 +672,8 @@ negatives (discussed below).
 Digital normalization should be an effective preprocessing approach
 for most assemblers.  In particular, the de Bruijn graph approach used
 in many modern assemblers relies on k-mer content, which is almost
-entirely preserved by digital normalization (see tables @@).
-\cite{pubmed20211242}.
+entirely preserved by digital normalization (see Tables \ref{tab:normC20}
+and \ref{tab:normC5}) \cite{pubmed20211242}.
 
 %First, digital normalization removes the majority of reads without
 %significantly affecting the true k-mer content of the data set.  This
@@ -743,7 +737,8 @@ normalization also discriminates against highly repetitive
 sequences. We note that these problems traditionally have been
 challenges for assembly strategies: recovering low-abundance isoforms
 from mRNAseq, assembling genomes from highly polymorphic organisms,
-and assembling across repeats are all difficult tasks, and continue to
+and assembling across repeats are all difficult tasks, and improvements
+in these areas continue to
 be active areas of research
 \cite{pubmed18549302,pubmed20633259,pubmed18541131}.
 
@@ -787,20 +782,20 @@ data sets; this could and should affect the quality of assembly
 results! Moreover, it is not clear what effect different coverage (C)
 and k-mer (k) values have on assemblers.
 
-We have intentionally bypassed many of these concerns here. We
-primarily discuss information retention in terms of k-mers, and can
-show that the vast majority of ``correct'' k-mers remain after digital
-normalization.  We have applied digital normalization only to
-microbial genomes and eukaryotic transcriptomes, neither of which have
-significant repeat content compared to eukaryotic genomes, so repeat
-resolution is less critical for these samples.  And, finally, we have
-disabled scaffolding in the assemblers, which eliminates the use of
-paired-end and mate-pair information for certain kinds of repeat
-resolution; in particular, this reduces the chances of long-range
-misassemblies due to paired-end information loss or bias from digital
-normalization.
+We have intentionally bypassed many of these concerns in this
+paper. We have shown show that the vast majority of ``correct'' k-mers
+remain after digital normalization, and we have applied digital
+normalization only to microbial genomes and eukaryotic transcriptomes.
+In contrast to eukaryotic genomes, 
+neither of these types of samples have significant repeat
+content, so repeat resolution is less
+critical for them.  We have also disabled
+scaffolding in the assemblers, which eliminates the use of paired-end
+and mate-pair information for certain kinds of repeat resolution; in
+particular, this reduces the chances of long-range misassemblies due
+to paired-end information loss or bias from digital normalization.
 
-Despite limiting our investigation in these ways, we argue that
+Despite limiting our investigation in these ways, we believe that
 digital normalization represents a substantial advance in basic {\em
   de novo} assembly approaches.  Even if it is used only for error
 removal, it is extraordinarily effective, removing most erroneous
@@ -811,7 +806,7 @@ one set of k-mer size $k$ and normalized coverage $C$ parameters, digital
 normalization seems to have little negative effect on the final
 assembled contigs.  Further investigation of the effects of varying
 $k$ and $C$ relative to specific assemblers and assembler parameters
-will likely result in improvements in the quality of assemblies.
+will likely result in further improvements in assembly quality.
 
 A more intriguing notion than merely using digital normalization as a
 pre-filter is to specifically adapt assembly algorithms and protocols
@@ -821,25 +816,27 @@ overlap-layout-consensus approaches computationally feasible for
 short-read data \cite{pubmed20211242}.  Alternatively, the quick and
 inexpensive generation of contigs from digitally normalized data could
 be used prior to a separate scaffolding step, such as those supported
-by SGA and Bambus2 \cite{pubmed20529929,pubmed21926123}.
+by SGA and Bambus2 \cite{pubmed20529929,pubmed21926123}.  Digital
+normalization offers many future directions for improving assembly.
 
 \subsection{Conclusions}
 
-Digital normalization is an effective demonstration of the general
-observation that much of short-read shotgun sequencing is redundant.
-Here we have shown this by normalizing samples to 5-20x coverage while
-recovering complete or nearly complete contig assemblies.
-Normalization is a substantially different approach than uniform
-downsampling: by doing downsampling in a locus-specific manner, we
-retain low coverage data.  Previously decsribed approaches to reducing
-sampling variation are {\em ad hoc} and may not be generally
-applicable @@.
+Digital normalization is an effective demonstration of the observation
+that much of short-read shotgun sequencing is redundant.  Here we have
+shown this by normalizing samples to 5-20x coverage while recovering
+complete or nearly complete contig assemblies.  Normalization is a
+substantially different approach than uniform downsampling: by doing
+downsampling in a locus-specific manner, we retain low coverage data.
+Previously described approaches to reducing sampling variation rely on
+{\em ad hoc} parameter measures and/or an initial round of assembly
+and have not been shown to be widely applicable
+\cite{pubmed19724646,pubmed22028825}.
 
-Digital normalization is a general strategy for scaling sequence
-assembly and provides a basis for streaming approaches in sequence
-analysis.  The reference-free estimator of per-read coverage offered
-by the median k-mer count may also enable additional analyses of
-coverage and complexity in shotgun data sets.
+Digital normalization is a simple and general strategy for scaling
+sequence assembly, and also provides a streaming basis for certain
+types of sequence analysis.  The reference-free estimator of per-read
+coverage offered by the median k-mer count may also enable additional
+analyses of coverage and complexity in shotgun data sets.
 
 Assembly of normalized data is significantly more computationally
 efficient than assembly of the unnormalized reads, and results in nearly
@@ -848,7 +845,7 @@ approach can also be applied to assembly of metagenomic data.  In this
 work, we focus on a reduction in the maximum {\em memory} requirements
 for assembly, as this is currently the least scalable component of
 completing an assembly; however, it is evident that digital
-normalization can lead to significant overall time decreases in
+normalization leads to significant overall time decreases in
 assembly as well.
 
 We have implemented digital normalization as a {\em prefilter}, so
@@ -858,7 +855,7 @@ Trinity -- but in theory digital normalization should apply to any
 assembler.  De Bruijn and string graph assemblers such as Velvet, SGA,
 SOAPdenovo, Oases, and Trinity are especially likely to work well with
 digital normalized data, due to the underlying reliance on k-mer
-overlaps in these assemblers @@.
+overlaps in these assemblers.
 
 %The method of digital normalization described here relies on a k-mer
 %based, reference-independent measurement of coverage for individual
@@ -964,14 +961,13 @@ C++ and Python, available at github.com/ctb/khmer/, tag
 '2012-paper-diginorm'.  khmer also relies on the screed package for
 loading sequences, available at github.com/ctb/screed/, tag
 '2012-paper-diginorm'.  khmer and screed are Copyright (c) 2010
-Michigan State University, and is free software available for
+Michigan State University, and are free software available for
 distribution, modification, and redistribution under the BSD license.
 
 Mapping was performed with bowtie v0.12.7 \cite{pubmed19261174}.
 Genome assembly was done with velvet 1.2.01 \cite{pubmed18349386}.
 Transcriptome assembly was done with velvet 1.1.05/oases 0.1.22 and
 Trinity, head of branch on 2011.10.29.
-
 Graphs and correlation coefficients were generated using matplotlib
 v1.1.0, numpy v1.7, and ipython notebook v0.12 \cite{ipython}.  The
 ipython notebook file and data analysis scripts necessary to generate
@@ -987,15 +983,13 @@ ged.msu.edu/papers/2012-diginorm/.
 
 %%http://public.ged.msu.edu.s3-website-us-east-1.amazonaws.com/molgula/
 
-\section{k-mer analysis parameters}
+\section{Analysis parameters}
 
 The khmer software uses a CountMin Sketch data structure to count
 k-mers, which requires a fixed memory allocation
 \cite{countminsketch}.  In all cases the memory usage was fixed such
 that the calculated false positive rate was below 0.01.  By default k
 was set to 20.
-
-\section{Read coverage estimates and comparisons}
 
 Genome and transcriptome coverage was calculated by mapping all reads
 to the reference with bowtie ({\tt -a --best --strata}) and then
@@ -1006,7 +1000,6 @@ locations, a reference location was chosen randomly for computing
 coverage.  Median k-mer counts were computed with khmer as described
 in the text.  Artificially high counts resulting from long stretches
 of Ns were removed after the analysis.
-
 Correlations between median k-mer counts and mapping coverage were
 computed using numpy.corrcoef; see calc-r2.py script.
 
@@ -1018,7 +1011,6 @@ for {\em Deltaproteobacteria} single cell.  Digital normalization
 on the three bacterial samples was done with {\tt -N 4 -x 2.5e8 -k 20},
 consuming 1gb of memory.  Post-normalization k parameters for Velvet
 assemblies were k=37 for {\em E. coli}, k=27 for {\em S. aureus}, and k=27 for {\em Deltaproteobacteria}.
-
 For Table \ref{tab:dntrans}, the assembly k parameter for Oases was k=21 for yeast
 and k=23 for mouse.  Digital normalization on both mRNAseq samples was done
 with {\tt -N 4 -x 2e9 -k 20}, consuming 8gb of memory.  Assembly of the
@@ -1033,7 +1025,6 @@ $>$ 200, and finally computing the fraction of bases in each assembly
 with at least one alignment.  Total fractions were normalized to
 self-by-self BLASTN overlap identity to account for BLAST-specific
 sequence filtering.
-
 TBLASTX comparison of the {\em Deltaproteobacteria} SAR324 sequence
 was done against another assembled SAR324 sequence, acc AFIA01000002.1.
 
@@ -1281,6 +1272,24 @@ F.~P\'erez and B.~E. Granger.
 \newblock {IP}ython: a {S}ystem for {I}nteractive {S}cientific {C}omputing.
 \newblock {\em {C}omput. {S}ci. {E}ng.}, 9(3):21--29, May 2007.
 
+\bibitem{cortex} Iqbal~Z, Caccamo~M, Turner~I, Flicek~P, McVean~G (2012).  {\it De novo} assembly and genotyping of variants using
+colored de Bruijn graphs.  {\it Nat Genetics}, 44(2):22632.
+
+\bibitem{pubmed17487184}
+Spits C, Caignec CL, Rycke MD, Haute LV, Steirteghem AV, et~al. (2006)
+  Whole-genome multiple displacement amplification from single cells.
+\newblock Nat Protoc 1: 1965-70.
+
+\bibitem{pubmed22028825}
+Woyke T, Sczyrba A, Lee J, Rinke C, Tighe D, et~al. (2011) Decontamination of
+  mda reagents for single cell whole genome amplification.
+\newblock PLoS One 6: e26161.
+
+\bibitem{pubmed19724646}
+Rodrigue S, Malmstrom R, Berlin A, Birren B, Henn M, et~al. (2009) Whole genome
+  amplification and de novo assembly of single bacterial cells.
+\newblock PLoS One 4: e6864.
+
 \end{thebibliography}
 
 \end{article}
@@ -1296,35 +1305,12 @@ substitution errors.}}
 \label{fig:rankabund}
 \end{figure}
 
-\begin{figure}[!ht]
-\begin{center}
-\centerline{\includegraphics[width=3in]{diginorm-sim-genome.pdf}}
-\centerline{\includegraphics[width=3in]{diginorm-ecoli-genome.pdf}}
-\end{center}
-\caption{
-{\bf Mapping and k-mer coverage measures correlate for simulated genome
-data and a real {\em E. coli} data set (5m reads).  Simulated data $r^2 = 0.79$; {\em
-E. coli} $r^2 = 0.80$.}
-}
-\label{fig:random}
-\end{figure}
-
-\begin{figure}[!ht]
-\begin{center}
-\centerline{\includegraphics[width=3in]{diginorm-sim-transcr.pdf}}
-\centerline{\includegraphics[width=3in]{diginorm-mouse-transcr.pdf}}
-\end{center}
-\caption{
-{\bf Mapping and k-mer coverage measures correlate for simulated transcriptome data as well as real mouse transcriptome data. Simulated data $r^2 = 0.93$;
-mouse transcriptome $r^2 = 0.90$.}
-}
-\label{fig:transcripts}
-\end{figure}
-
 \begin{figure}
-\centerline{\includegraphics[width=3in]{diginorm-coverage.pdf}}
+\centerline{\includegraphics[width=3in]{diginorm-coverage2-raw.pdf}}
+\centerline{\includegraphics[width=3in]{diginorm-coverage2-dn.pdf}}
 \caption{
-{\bf Coverage distribution of simulated and real genomes, calculated from mapped reads before and after normalization (k=20, C=20).}}
+{\bf Coverage distribution of three microbial genome samples, calculated
+from mapped reads (a) before and (b) after digital normalization (k=20, C=20).}}
 \label{fig:coverage}
 \end{figure}
 
@@ -1461,6 +1447,34 @@ Mouse (Trinity) & 50,801 / 61,242 & 79.6 mb / 78.8mb & 23,760 / 24,994 & 65.7mb 
 \label{tab:dntrans0}
 \end{table}
 
+\setcounter{figure}{0}
+\makeatletter
+\renewcommand{\thefigure}{S\@arabic\c@figure}
+
+\begin{figure}[!ht]
+\begin{center}
+\centerline{\includegraphics[width=3in]{diginorm-sim-genome.pdf}}
+\centerline{\includegraphics[width=3in]{diginorm-ecoli-genome.pdf}}
+\end{center}
+\caption{
+{\bf Mapping and k-mer coverage measures correlate for simulated genome
+data and a real {\em E. coli} data set (5m reads).  Simulated data $r^2 = 0.79$; {\em
+E. coli} $r^2 = 0.80$.}
+}
+\label{fig:random}
+\end{figure}
+
+\begin{figure}[!ht]
+\begin{center}
+\centerline{\includegraphics[width=3in]{diginorm-sim-transcr.pdf}}
+\centerline{\includegraphics[width=3in]{diginorm-mouse-transcr.pdf}}
+\end{center}
+\caption{
+{\bf Mapping and k-mer coverage measures correlate for simulated transcriptome data as well as real mouse transcriptome data. Simulated data $r^2 = 0.93$;
+mouse transcriptome $r^2 = 0.90$.}
+}
+\label{fig:transcripts}
+\end{figure}
 
 \end{document}
 
