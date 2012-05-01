@@ -2,8 +2,6 @@
 
 % @@spellcheck!
 % @graph of k-mer count vs data
-% @@add cortex ref.
-% @@add three Tringe refs
 %
 % @error correction could be applied at C=20 stage to mrnaseq
 % @error correction after diginorm <=> skewed abundance dists.
@@ -383,19 +381,19 @@ eliminates additional errors and results in a further decrease in data
 set size, at the cost of very few real k-mers in genomic data sets
 (Table \ref{tab:normC5}).
 
-Why use this three-pass protocol rather than simply normalizing to the
-lowest desired coverage in the first pass?  We find that removing
-low-abundance k-mers after a single normalization pass to $C \approx
-5$ removes many more {\em real} k-mers, because there will be many
-regions in the genome that by chance have yielded 5 reads with errors
-in them. If these erroneous k-mers are removed in the abundance-trimming step,
-coverage of the corresponding regions is eliminated.  By normalizing
-to a higher coverage of 20, removing errors, and only then reducing
-coverage to 5, digital normalization can retain accurate reads for most
-regions.  Note that this three-pass protocol is not considerably more
-computationally expensive than the single-pass protocol: the first
-pass discards the majority of data and errors, so later passes are
-less time and memory intensive than the first pass.
+% Why use this three-pass protocol rather than simply normalizing to the
+% lowest desired coverage in the first pass?  We find that removing
+% low-abundance k-mers after a single normalization pass to $C \approx
+% 5$ removes many more {\em real} k-mers, because there will be many
+% regions in the genome that by chance have yielded 5 reads with errors
+% in them. If these erroneous k-mers are removed in the abundance-trimming step,
+% coverage of the corresponding regions is eliminated.  By normalizing
+% to a higher coverage of 20, removing errors, and only then reducing
+% coverage to 5, digital normalization can retain accurate reads for most
+% regions.  Note that this three-pass protocol is not considerably more
+% computationally expensive than the single-pass protocol: the first
+% pass discards the majority of data and errors, so later passes are
+% less time and memory intensive than the first pass.
 
 Interestingly, this three-pass protocol removed many more real k-mers
 from the simulated mRNAseq data than from the simulated genome -- 351
@@ -782,22 +780,23 @@ data sets; this could and should affect the quality of assembly
 results! Moreover, it is not clear what effect different coverage (C)
 and k-mer (k) values have on assemblers.
 
-We have intentionally bypassed many of these concerns in this
-paper. We have shown show that the vast majority of ``correct'' k-mers
-remain after digital normalization, and we have applied digital
-normalization only to microbial genomes and eukaryotic transcriptomes.
-In contrast to eukaryotic genomes, 
-neither of these types of samples have significant repeat
-content, so repeat resolution is less
-critical for them.  We have also disabled
-scaffolding in the assemblers, which eliminates the use of paired-end
-and mate-pair information for certain kinds of repeat resolution; in
-particular, this reduces the chances of long-range misassemblies due
-to paired-end information loss or bias from digital normalization.
+% We have intentionally bypassed many of these concerns in this
+% paper. We have shown show that the vast majority of ``correct'' k-mers
+% remain after digital normalization, and we have applied digital
+% normalization only to microbial genomes and eukaryotic transcriptomes.
+% In contrast to eukaryotic genomes, 
+% neither of these types of samples have significant repeat
+% content, so repeat resolution is less
+% critical for them.  We have also disabled
+% scaffolding in the assemblers, which eliminates the use of paired-end
+% and mate-pair information for certain kinds of repeat resolution; in
+% particular, this reduces the chances of long-range misassemblies due
+% to paired-end information loss or bias from digital normalization.
 
-Despite limiting our investigation in these ways, we believe that
-digital normalization represents a substantial advance in basic {\em
-  de novo} assembly approaches.  Even if it is used only for error
+Despite this,
+we believe that
+digital normalization represents a substantial advance for basic {\em
+  de novo} assembly.  Even if it is used only for error
 removal, it is extraordinarily effective, removing most erroneous
 k-mers with a single pass, in fixed memory.  With the additional data
 reduction, this results in significant time and memory savings for
@@ -939,6 +938,10 @@ downloaded from bix.ucsd.edu/projects/singlecell/.  The
 mouse data set was published by Grabherr et al. \cite{pubmed21572440}
 and downloaded from trinityrnaseq.sf.net/.  All data sets
 were used without modification.
+The complete assemblies, both pre- and post-normalization, for the
+{\em E. coli}, {\em S. aureus}, the uncultured {\em
+  Deltaproteobacteria}, mouse, and yeast data sets are available from
+ged.msu.edu/papers/2012-diginorm/.
 
 The simulated genome and transcriptome were generated from a uniform
 AT/CG distribution.  The genome consisted of a single chromosome
@@ -973,13 +976,6 @@ v1.1.0, numpy v1.7, and ipython notebook v0.12 \cite{ipython}.  The
 ipython notebook file and data analysis scripts necessary to generate
 the figures are available at 
   github.com/ctb/2012-paper-diginorm/.
-
-\section{Results}
-
-The complete assemblies, both pre- and post-normalization, for the
-{\em E. coli}, {\em S. aureus}, the uncultured {\em
-  Deltaproteobacteria}, mouse, and yeast data sets are available from
-ged.msu.edu/papers/2012-diginorm/.
 
 %%http://public.ged.msu.edu.s3-website-us-east-1.amazonaws.com/molgula/
 
@@ -1120,6 +1116,9 @@ J.~Simpson and R.~Durbin.
   structures.
 \newblock {\em Genome Res}, 22(3):549--56, 2012.
 
+\bibitem{cortex} Iqbal~Z, Caccamo~M, Turner~I, Flicek~P, McVean~G (2012).  {\it De novo} assembly and genotyping of variants using
+colored de Bruijn graphs.  {\it Nat Genetics}, 44(2):22632.
+
 \bibitem{pubmed22068540}
 P.~Compeau, P.~Pevzner, and G.~Tesler.
 \newblock How to apply de bruijn graphs to genome assembly.
@@ -1166,6 +1165,16 @@ H.~Chitsaz, J.~Yee-Greenbaum, G.~Tesler, M.~Lombardo, C.~Dupont, J.~Badger,
   short-read data sets.
 \newblock {\em Nat Biotechnol}, 29(10):915--21, 2011.
 
+\bibitem{pubmed19724646}
+Rodrigue S, Malmstrom R, Berlin A, Birren B, Henn M, et~al. (2009) Whole genome
+  amplification and de novo assembly of single bacterial cells.
+\newblock PLoS One 4: e6864.
+
+\bibitem{pubmed22028825}
+Woyke T, Sczyrba A, Lee J, Rinke C, Tighe D, et~al. (2011) Decontamination of
+  mda reagents for single cell whole genome amplification.
+\newblock PLoS One 6: e26161.
+
 \bibitem{pubmed21685062}
 P.~Medvedev, E.~Scott, B.~Kakaradov, and P.~Pevzner.
 \newblock Error correction of high-throughput sequencing datasets with
@@ -1199,28 +1208,26 @@ G.~Cormode and S.~Muthukrishnan.
   applications.
 \newblock {\em Journal of Algorithms}, 2004.
 
+\bibitem{pubmed17487184}
+Spits C, Caignec CL, Rycke MD, Haute LV, Steirteghem AV, et~al. (2006)
+  Whole-genome multiple displacement amplification from single cells.
+\newblock Nat Protoc 1: 1965-70.
+
 \bibitem{pubmed21151575}
 J.~Pickrell, A.~Pai, Y.~Gilad, and J.~Pritchard.
 \newblock Noisy splicing drives mrna isoform diversity in human cells.
 \newblock {\em PLoS Genet}, 6(12):e1001236, 2010.
 
-\bibitem{pubmed22419786}
-M.~Burriesci, E.~Lehnert, and J.~Pringle.
-\newblock Fulcrum: condensing redundant reads from high-throughput sequencing
-  studies.
-\newblock {\em Bioinformatics}, 2012.
+\bibitem{muthukrishnan2005data}
+S.~Muthukrishnan.
+\newblock {\em Data streams: algorithms and applications}.
+\newblock Foundations and trends in theoretical computer science. Now
+  Publishers, 2005.
 
 \bibitem{pubmed22139935}
 A.~Pinho, D.~Pratas, and S.~Garcia.
 \newblock Green: a tool for efficient compression of genome resequencing data.
 \newblock {\em Nucleic Acids Res}, 40(4):e27, 2012.
-
-\bibitem{pubmed22147368}
-S.~Salzberg, A.~Phillippy, A.~Zimin, D.~Puiu, T.~Magoc, S.~Koren, T.~Treangen,
-  M.~Schatz, A.~Delcher, M.~Roberts, G.~Marcais, M.~Pop, and J.~Yorke.
-\newblock Gage: A critical evaluation of genome assemblies and assembly
-  algorithms.
-\newblock {\em Genome Res}, 22(3):557--67, 2012.
 
 \bibitem{pubmed18549302}
 H.~Do, K.~Choi, F.~Preparata, W.~Sung, and L.~Zhang.
@@ -1250,17 +1257,6 @@ S.~Koren, T.~Treangen, and M.~Pop.
 \newblock Bambus 2: scaffolding metagenomes.
 \newblock {\em Bioinformatics}, 27(21):2964--71, 2011.
 
-\bibitem{pubmed19357099}
-M.~Schatz.
-\newblock Cloudburst: highly sensitive read mapping with mapreduce.
-\newblock {\em Bioinformatics}, 25(11):1363--9, 2009.
-
-\bibitem{muthukrishnan2005data}
-S.~Muthukrishnan.
-\newblock {\em Data streams: algorithms and applications}.
-\newblock Foundations and trends in theoretical computer science. Now
-  Publishers, 2005.
-
 \bibitem{pubmed19261174}
 B.~Langmead, C.~Trapnell, M.~Pop, and S.~Salzberg.
 \newblock Ultrafast and memory-efficient alignment of short dna sequences to
@@ -1272,23 +1268,23 @@ F.~P\'erez and B.~E. Granger.
 \newblock {IP}ython: a {S}ystem for {I}nteractive {S}cientific {C}omputing.
 \newblock {\em {C}omput. {S}ci. {E}ng.}, 9(3):21--29, May 2007.
 
-\bibitem{cortex} Iqbal~Z, Caccamo~M, Turner~I, Flicek~P, McVean~G (2012).  {\it De novo} assembly and genotyping of variants using
-colored de Bruijn graphs.  {\it Nat Genetics}, 44(2):22632.
+%\bibitem{pubmed22419786}
+%M.~Burriesci, E.~Lehnert, and J.~Pringle.
+%\newblock Fulcrum: condensing redundant reads from high-throughput sequencing
+%  studies.
+%\newblock {\em Bioinformatics}, 2012.
 
-\bibitem{pubmed17487184}
-Spits C, Caignec CL, Rycke MD, Haute LV, Steirteghem AV, et~al. (2006)
-  Whole-genome multiple displacement amplification from single cells.
-\newblock Nat Protoc 1: 1965-70.
+%\bibitem{pubmed22147368}
+%S.~Salzberg, A.~Phillippy, A.~Zimin, D.~Puiu, T.~Magoc, S.~Koren, T.~Treangen,
+%  M.~Schatz, A.~Delcher, M.~Roberts, G.~Marcais, M.~Pop, and J.~Yorke.
+%\newblock Gage: A critical evaluation of genome assemblies and assembly
+%  algorithms.
+%\newblock {\em Genome Res}, 22(3):557--67, 2012.
 
-\bibitem{pubmed22028825}
-Woyke T, Sczyrba A, Lee J, Rinke C, Tighe D, et~al. (2011) Decontamination of
-  mda reagents for single cell whole genome amplification.
-\newblock PLoS One 6: e26161.
-
-\bibitem{pubmed19724646}
-Rodrigue S, Malmstrom R, Berlin A, Birren B, Henn M, et~al. (2009) Whole genome
-  amplification and de novo assembly of single bacterial cells.
-\newblock PLoS One 4: e6864.
+%\bibitem{pubmed19357099}
+%M.~Schatz.
+%\newblock Cloudburst: highly sensitive read mapping with mapreduce.
+%\newblock {\em Bioinformatics}, 25(11):1363--9, 2009.
 
 \end{thebibliography}
 
