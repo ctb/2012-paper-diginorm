@@ -1,67 +1,94 @@
-% reviewers: schatz, pop, durbin, pevzner.
-
-% @@spellcheck!
-% @graph of k-mer count vs data
+% Template for PLoS
+% Version 1.0 January 2009
 %
-% @error correction could be applied at C=20 stage to mrnaseq
-% @error correction after diginorm <=> skewed abundance dists.
-% @long reads!
-% @comparison with dnadiff/GAGE
-%
+% To compile to pdf, run:
+% latex plos.template
+% bibtex plos.template
+% latex plos.template
+% latex plos.template
+% dvipdf plos.template
 
-% Faster sequencers, larger datasets, new challenges
-% Mason?CE, Elemento?O
-% Genome Biology?2012, 13:314 (27 March 2012)       
-% Abstract                http://genomebiology.com/2012/13/3/314/abstract
-% Full text               http://genomebiology.com/2012/13/3/314
-% PDF
-% http://genomebiology.com/content/pdf/gb-2012-13-3-314.pdf
+\documentclass[10pt]{article}
 
-%% can now apply error correction to non-genomic@@
-%% impact on assembly
-%% remove redundant sequences
-%% metagenomics etc
-%% scale with sequence content etc.
-%% will trimble's arg
-%% Preprocessing RNA scaffolding, top hat gene models, error corr
-%% GAGE argues that quality of reads => quality of assembly.  we get good qual!
-%% nature review on de novo assembly
+% amsmath package, useful for mathematical formulas
+\usepackage{amsmath}
+% amssymb package, useful for mathematical symbols
+\usepackage{amssymb}
 
-\documentclass{pnastwo}
-\pdfoutput=1
+% graphicx package, useful for including eps and pdf graphics
+% include graphics with the command \includegraphics
 \usepackage{graphicx}
 
+% cite package, to clean up citations in the main text. Do not remove.
+\usepackage{cite}
+
+\usepackage{color} 
+
+% Use doublespacing - comment out for single spacing
+%\usepackage{setspace} 
+%\doublespacing
+
+
+% Text layout
+\topmargin 0.0cm
+\oddsidemargin 0.5cm
+\evensidemargin 0.5cm
+\textwidth 16cm 
+\textheight 21cm
+
+% Bold the 'Figure #' in the caption and separate it with a period
+% Captions will be left justified
+\usepackage[labelfont=bf,labelsep=period,justification=raggedright]{caption}
+
+% Use the PLoS provided bibtex style
+\bibliographystyle{plos2009}
+
+% Remove brackets from numbering in List of References
+\makeatletter
+\renewcommand{\@biblabel}[1]{\quad#1.}
+\makeatother
+
+
+% Leave date blank
+\date{}
+
+\pagestyle{myheadings}
+%% ** EDIT HERE **
+
+
+%% ** EDIT HERE **
+%% PLEASE INCLUDE ALL MACROS BELOW
+
+%% END MACROS SECTION
 
 \begin{document}
 
-\title{A reference-free algorithm for computational normalization of shotgun sequencing data}
-
-\author{
-C. Titus Brown
-\affil{1}{Computer Science and Engineering, Michigan State University, East Lansing, MI, United States}
-\affil{2}{Microbiology and Molecular Genetics, Michigan State University, East Lansing, MI, United States}
-\footnote{Corresponding author: ctb@msu.edu}
-\and
-Adina Howe
-\affil{2}{}
-\affil{3}{Crop and Soil Sciences, Michigan State University, East Lansing, MI, United States}
-\and
-Qingpeng Zhang
-\and
-\affil{1}{}
-Alexis B. Pyrkosz
-\affil{4}{USDA Avian Disease and Oncology Laboratory, East Lansing, MI, USA}
-\and
-Timothy H. Brom
-\affil{1}{}
+% Title must be 150 characters or less
+\begin{flushleft}
+{\Large
+\textbf{A Reference-Free Algorithm for Computational Normalization of Shotgun Sequencing Data}
 }
-
-\maketitle
-
-\begin{article}
+% Insert Author names, affiliations and corresponding author email.
+\\
+C. Titus Brown$^{1,2,\ast}$,
+Adina Howe$^{2}$,
+Qingpeng Zhang$^{1}$,
+Alexis B. Pyrkosz$^{3}$,
+Timothy H. Brom$^{1}$
+\\
+\bf{1} Computer Science and Engineering, Michigan State University,
+East Lansing, MI, USA
+\\
+\bf{2} Microbiology and Molecular Genetics, Michigan State University,
+East Lansing, MI, USA
+\\
+\bf{3} USDA Avian Disease and Oncology Laboratory, East Lansing, MI, USA
+\\
+$\ast$ E-mail: ctb@msu.edu
+\end{flushleft}
 
 % Please keep the abstract between 250 and 300 words
-\begin{abstract}
+\section*{Abstract}
 
 Deep shotgun sequencing and analysis of genomes, transcriptomes,
 amplified single-cell genomes, and metagenomes has enabled
@@ -83,10 +110,12 @@ digital normalization to the assembly of microbial genomic data,
 amplified single-cell genomic data, and transcriptomic data.  Our
 implementation is freely available for use and modification.
 
-\end{abstract}
-\keywords{de novo assembly | compression | error correction | k-mers}
+% Please keep the Author Summary between 150 and 200 words
+% Use first person. PLoS ONE authors please skip this step. 
+% Author Summary not valid for PLoS ONE submissions.   
+\section*{Author Summary}
 
-\section{Introduction}
+\section*{Introduction}
 
 The ongoing improvements in DNA sequencing technologies have led to a
 new problem: how do we analyze the resulting large sequence data sets
@@ -214,7 +243,7 @@ include {\em E. coli} genomic data, data from two single-cell
 MD-amplified microbial genomes, and yeast and mouse mRNAseq.
 
 % Results and Discussion can be combined.
-\section{Results}
+\section*{Results}
 
 \subsection*{Estimating sequencing depth without a reference assembly}
 
@@ -270,7 +299,7 @@ well with mapping-based estimates of read coverage.
 %We next investigate ways of using this estimator to remove highly
 %sampled regions prior to {\em de novo} assembly.
 
-\subsection{Eliminating redundant reads reduces variation in sequencing depth}
+\subsection*{Eliminating redundant reads reduces variation in sequencing depth}
 
 Deeply sequenced genomes contain many highly covered loci.  For
 example, in a human genome sequenced to 100x average coverage, we would
@@ -320,18 +349,18 @@ systematically shifted to an average mapping coverage of 26, while
 lower-coverage loci remain at their previous coverage.  This smooths
 out coverage of the overall data set.
 
-%At what rate are sequences retained?  For the {\em E. coli} data set,
-%Figure \ref{fig:accumulate} shows the fraction of sequences retained
-%by digital normalization as a function of the total number of reads
-%examined when normalizing to C=20 at k=20.  There is a clear
-%saturation effect showing that as more reads are examined, a smaller
-%fraction of reads is retained; by 5m reads, approximately 50-100x
-%coverage of {\em E. coli}, under 30\% of new reads are kept.  This
-%demonstrates that as expected, only a small amount of novelty (in
-%the form of either new information, or the systematic accumulation of
-%errors) is being observed with increasing sequencing depth.
+At what rate are sequences retained?  For the {\em E. coli} data set,
+Figure \ref{fig:accumulate} shows the fraction of sequences retained
+by digital normalization as a function of the total number of reads
+examined when normalizing to C=20 at k=20.  There is a clear
+saturation effect showing that as more reads are examined, a smaller
+fraction of reads is retained; by 5m reads, approximately 50-100x
+coverage of {\em E. coli}, under 30\% of new reads are kept.  This
+demonstrates that as expected, only a small amount of novelty (in
+the form of either new information, or the systematic accumulation of
+errors) is being observed with increasing sequencing depth.
 
-\subsection{Digital normalization retains information while discarding
+\subsection*{Digital normalization retains information while discarding
 both data and errors}
 
 The 1-2\% per-base error rate of next-generation sequencers
@@ -381,19 +410,19 @@ eliminates additional errors and results in a further decrease in data
 set size, at the cost of very few real k-mers in genomic data sets
 (Table \ref{tab:normC5}).
 
-% Why use this three-pass protocol rather than simply normalizing to the
-% lowest desired coverage in the first pass?  We find that removing
-% low-abundance k-mers after a single normalization pass to $C \approx
-% 5$ removes many more {\em real} k-mers, because there will be many
-% regions in the genome that by chance have yielded 5 reads with errors
-% in them. If these erroneous k-mers are removed in the abundance-trimming step,
-% coverage of the corresponding regions is eliminated.  By normalizing
-% to a higher coverage of 20, removing errors, and only then reducing
-% coverage to 5, digital normalization can retain accurate reads for most
-% regions.  Note that this three-pass protocol is not considerably more
-% computationally expensive than the single-pass protocol: the first
-% pass discards the majority of data and errors, so later passes are
-% less time and memory intensive than the first pass.
+Why use this three-pass protocol rather than simply normalizing to the
+lowest desired coverage in the first pass?  We find that removing
+low-abundance k-mers after a single normalization pass to $C \approx
+5$ removes many more {\em real} k-mers, because there will be many
+regions in the genome that by chance have yielded 5 reads with errors
+in them. If these erroneous k-mers are removed in the abundance-trimming step,
+coverage of the corresponding regions is eliminated.  By normalizing
+to a higher coverage of 20, removing errors, and only then reducing
+coverage to 5, digital normalization can retain accurate reads for most
+regions.  Note that this three-pass protocol is not considerably more
+computationally expensive than the single-pass protocol: the first
+pass discards the majority of data and errors, so later passes are
+less time and memory intensive than the first pass.
 
 Interestingly, this three-pass protocol removed many more real k-mers
 from the simulated mRNAseq data than from the simulated genome -- 351
@@ -423,7 +452,7 @@ also see that the first-pass digital normalization is extremely effective,
 eliminating essentially all of the erroneous k-mers (Table \ref{tab:normC20},
 rows 4 and 5.)
 
-\subsection{Digital normalization scales assembly of microbial genomes}
+\subsection*{Digital normalization scales assembly of microbial genomes}
 
 We applied the three-pass digital normalization and error trimming
 protocol to three real data sets from Chitsaz et al (2011)
@@ -443,11 +472,11 @@ assemblies overlapped with the known reference sequence by more than
 98\%.  This confirms that little or no information was lost during
 the process of digital normalization; moreover, it appears that
 digital normalization does not significantly affect the assembly results.
-%(Note that we did not perform scaffolding, since the digital
-%normalization algorithm does not take into account paired-end
-%sequences, and could mislead scaffolding approaches.  Therefore, these
-%results cannot directly be compared to those in Chitsaz et al. (2011)
-%\cite{pubmed21926975}.)
+(Note that we did not perform scaffolding, since the digital
+normalization algorithm does not take into account paired-end
+sequences, and could mislead scaffolding approaches.  Therefore, these
+results cannot directly be compared to those in Chitsaz et al. (2011)
+\cite{pubmed21926975}.)
 
 The {\em Deltaproteobacteria} sequence also assembled well, with
 98.8\% sequence overlap with the results from Chitsaz et al.
@@ -465,7 +494,7 @@ Velvet-SC in terms of sensitivity.
 
 % @ tables or anything?
 
-\subsection{Digital normalization scales assembly of transcriptomes}
+\subsection*{Digital normalization scales assembly of transcriptomes}
 
 We next applied single-pass digital normalization to published yeast
 and mouse mRNAseq data sets, reducing them to 20x coverage at k=20
@@ -537,9 +566,9 @@ suggests that the primary sequence content for the transcriptome remains
 present in the normalized reads, although it is recovered with different
 effectiveness by the two assemblers.
 
-\section{Discussion}
+\section*{Discussion}
 
-\subsection{Digital normalization dramatically scales {\em de novo} assembly}
+\subsection*{Digital normalization dramatically scales {\em de novo} assembly}
 
 The results from applying digital normalization to read data sets
 prior to {\em de novo} assembly are extremely good: digital
@@ -616,7 +645,7 @@ and \ref{tab:normC5}) \cite{pubmed20211242}.
 
 % @figure out how to make strong argument here for assembly.
 
-\subsection{A general strategy for normalizing coverage}
+\subsection*{A general strategy for normalizing coverage}
 
 Digital normalization is a general strategy for systematizing coverage
 in shotgun sequencing data sets by using per-locus downsampling,
@@ -724,7 +753,7 @@ application of more complex heuristics to the assembly problem.
 %digital normalization need only be performed once, and will speed up
 %all successive assembly efforts.
 
-\subsection{Digital normalization drops terminal k-mers and removes isoforms}
+\subsection*{Digital normalization drops terminal k-mers and removes isoforms}
 
 Our implementation of digital normalization does discard some real
 information, including terminal k-mers and low-abundance isoforms.
@@ -746,20 +775,20 @@ Our current approach also ignores quality scores; a ``q-mer'' counting
 approach as in Quake, in which k-mer counts are weighted by quality
 scores, could easily be adapted \cite{pubmed21114842}.
 
-%Another concern for normalizing deep sequencing data sets is that,
-%with sufficiently deep sequencing, sequences with many errors will
-%start to accrue.  This underlies the continued accumulation of
-%sequence data for {\em E. coli} observed in Figure
-%\ref{fig:accumulate}.  Assemblers may be unable to distinguish between
-%this false sequence and the error-free sequences, for sufficiently
-%deep data sets.  This accumulation of erroneous sequences is again
-%caused by the use of k-mers to detect similarity, and is one reason
-%why exploring local alignment approaches (discussed below) may be a
-%good future direction.
+Another concern for normalizing deep sequencing data sets is that,
+with sufficiently deep sequencing, sequences with many errors will
+start to accrue.  This underlies the continued accumulation of
+sequence data for {\em E. coli} observed in Figure
+\ref{fig:accumulate}.  Assemblers may be unable to distinguish between
+this false sequence and the error-free sequences, for sufficiently
+deep data sets.  This accumulation of erroneous sequences is again
+caused by the use of k-mers to detect similarity, and is one reason
+why exploring local alignment approaches (discussed below) may be a
+good future direction.
 
 \newpage
 
-\subsection{Applying assembly algorithms to digitally normalized data}
+\subsection*{Applying assembly algorithms to digitally normalized data}
 
 % @@ refactor
 
@@ -817,7 +846,7 @@ be used prior to a separate scaffolding step, such as those supported
 by SGA and Bambus2 \cite{pubmed20529929,pubmed21926123}.  Digital
 normalization offers many future directions for improving assembly.
 
-\subsection{Conclusions}
+\subsection*{Conclusions}
 
 Digital normalization is an effective demonstration
 that much of short-read shotgun sequencing is redundant.  Here we have
@@ -878,59 +907,71 @@ overlaps in these assemblers.
 %normalization should be applicable to contig generation for eukaryotic
 %genome assembly.
 
-%\subsection{Digital normalization is widely applicable and computationally convenient}
+\subsection*{Digital normalization is widely applicable and computationally convenient}
 %
-%Digital normalization can be applied {\em de novo} to {\em any}
-%shotgun data set.  The approach is extremely computationally
-%convenient: the runtime complexity is linear with respect to the data
-%size, and perhaps more importantly it is {\em single-pass}: the basic
-%algorithm does not need to look at any read more than once.  Moreover,
-%because reads accumulate sub-linearly, errors do not accumulate
-%quickly and overall memory requirements for digital normalization
-%should grow slowly with data set size.  Note also that while the
-%algorithm presented here is not perfectly parallelizable, efficient
-%distributed k-mer counting is straightforward and it should be
-%possible to scale digital normalization across multiple machines
-%\cite{pubmed19357099}.
-%
-%The first pass of digital normalization is implemented as an online
-%streaming algorithm in which reads are examined once.  Streaming
-%algorithms are useful for solving data analysis problems in which
-%the data are too large to easily be transmitted, processed, or
-%stored.  Here, we implement the streaming algorithm using a fixed
-%memory data ``sketch'' data structure, CountMin Sketch.  By combining
-%a single-pass algorithm with a fixed-memory data structure, we provide
-%a data reduction approach for sequence data analysis with both
-%(linear) time and (constant) memory guarantees. Moreover, because the
-%false positive rate of the CountMin Sketch data structure is well
-%understood and easy to predict, we can provide {\em data quality}
-%guarantees as well.  These kinds of guarantees are immensely
-%valuable from an algorithmic perspective, because they provide a
-%robust foundation for further work \cite{muthukrishnan2005data}.
+Digital normalization can be applied {\em de novo} to {\em any}
+shotgun data set.  The approach is extremely computationally
+convenient: the runtime complexity is linear with respect to the data
+size, and perhaps more importantly it is {\em single-pass}: the basic
+algorithm does not need to look at any read more than once.  Moreover,
+because reads accumulate sub-linearly, errors do not accumulate
+quickly and overall memory requirements for digital normalization
+should grow slowly with data set size.  Note also that while the
+algorithm presented here is not perfectly parallelizable, efficient
+distributed k-mer counting is straightforward and it should be
+possible to scale digital normalization across multiple machines
+\cite{pubmed19357099}.
+
+The first pass of digital normalization is implemented as an online
+streaming algorithm in which reads are examined once.  Streaming
+algorithms are useful for solving data analysis problems in which
+the data are too large to easily be transmitted, processed, or
+stored.  Here, we implement the streaming algorithm using a fixed
+memory data ``sketch'' data structure, CountMin Sketch.  By combining
+a single-pass algorithm with a fixed-memory data structure, we provide
+a data reduction approach for sequence data analysis with both
+(linear) time and (constant) memory guarantees. Moreover, because the
+false positive rate of the CountMin Sketch data structure is well
+understood and easy to predict, we can provide {\em data quality}
+guarantees as well.  These kinds of guarantees are immensely
+valuable from an algorithmic perspective, because they provide a
+robust foundation for further work \cite{muthukrishnan2005data}.
 %% @(c.f. Halting Problem).
 %% @compressed sensing
 %
-%The general concept of removing redundant {\em data} while retaining
-%{\em information} underlies ``lossy compression'', an approach used
-%widely in image processing and video compression.  The concept of
-%lossy compression has broad applicability in sequence analysis.
-%For example, digital normalization could be applied prior to homology
-%search on unassembled reads, potentially reducing the computational
-%requirements for e.g. BLAST and HMMER without loss of sensitivity.
-%Digital normalization could also help merge multiple different read
-%data sets from different read technologies, by discarding
-%entirely redundant sequences and retaining only sequences containing
-%``new'' information.  These approaches remain to be explored in the future.
+The general concept of removing redundant {\em data} while retaining
+{\em information} underlies ``lossy compression'', an approach used
+widely in image processing and video compression.  The concept of
+lossy compression has broad applicability in sequence analysis.
+For example, digital normalization could be applied prior to homology
+search on unassembled reads, potentially reducing the computational
+requirements for e.g. BLAST and HMMER without loss of sensitivity.
+Digital normalization could also help merge multiple different read
+data sets from different read technologies, by discarding
+entirely redundant sequences and retaining only sequences containing
+``new'' information.  These approaches remain to be explored in the future.
 
 % \section*{Misc foo}
 
-\begin{materials}
+% Results and Discussion can be combined.
+%\section*{Results}
+
+%\subsection*{Subsection 1}
+
+%\subsection*{Subsection 2}
+
+%\section*{Discussion}
+
+% You may title this section "Methods" or "Models". 
+% "Models" is not a valid title for PLoS ONE authors. However, PLoS ONE
+% authors may use "Analysis" 
+\section*{Methods}
 
 All links below are available electronically through
 ged.msu.edu/papers/2012-diginorm/, in addition to the
 archival locations provided.
 
-\section{Data sets}
+\subsection*{Data sets}
 
 The {\em E. coli}, {\em S. aureus}, and {\em Deltaproteobacteria} data
 sets were taken from Chitsaz et al. \cite{pubmed21926975}, and
@@ -954,7 +995,7 @@ were generated from the transcriptome at relative expression levels of
 probability to each expression group; these reads also had a 1\%
 per-base error.
 
-\section{Scripts and software}
+\subsection*{Scripts and software}
 
 All simulated data sets and all analysis summaries were generated by
 Python scripts, which are available at
@@ -979,7 +1020,7 @@ the figures are available at
 
 %%http://public.ged.msu.edu.s3-website-us-east-1.amazonaws.com/molgula/
 
-\section{Analysis parameters}
+\subsection*{Analysis parameters}
 
 The khmer software uses a CountMin Sketch data structure to count
 k-mers, which requires a fixed memory allocation
@@ -999,7 +1040,7 @@ of Ns were removed after the analysis.
 Correlations between median k-mer counts and mapping coverage were
 computed using numpy.corrcoef; see calc-r2.py script.
 
-\section{Normalization and assembly parameters}
+\subsection*{Normalization and assembly parameters}
 
 For Table \ref{tab:dngenome}, the assembly k parameter for Velvet was
 k=45 for {\em E. coli}; k=41 for {\em S. aureus} single cell; and k=39
@@ -1013,7 +1054,7 @@ with {\tt -N 4 -x 2e9 -k 20}, consuming 8gb of memory.  Assembly of the
 single-pass normalized mRNAseq was done with Oases at k=21 (yeast) and k=19
 (mouse).
 
-\section{Assembly overlap and analysis}
+\subsection*{Assembly overlap and analysis}
 
 Assembly overlap was computed by first using NCBI BLASTN to build local
 alignments for two assemblies, then filtering for matches with bit scores
@@ -1024,7 +1065,7 @@ sequence filtering.
 TBLASTX comparison of the {\em Deltaproteobacteria} SAR324 sequence
 was done against another assembled SAR324 sequence, acc AFIA01000002.1.
 
-\section{Compute requirement estimation}
+\subsection*{Compute requirement estimation}
 
 Execution time was measured using real time from Linux bash 'time'.
 Peak memory usage was estimated either by the 'memusg' script from
@@ -1034,266 +1075,27 @@ jobs run on MSU's HPC system.  While several different machines were
 used for analyses, comparisons between unnormalized and normalized
 data sets were always done on the same machine.
 
-\end{materials}
-
 % Do NOT remove this, even if you are not including acknowledgments
-\begin{acknowledgments}
+\section*{Acknowledgments}
 
 We thank Chris Hart, James M. Tiedje, Brian Haas, Jared Simpson, Scott
 Emrich, and Russell Neches for their insight and helpful technical
-commentary.  This work was supported in part by the USDA (AFRI
-Competitive Grant 2010-65205-20361), NSF (DBI-0939454 and
-IOS-0923812), as well as the DOE Great Lakes Bioenergy Research Center
-(DOE BER DE-FC02-07ER64494), MSU AgBio Research, and NIH grant UH3
-DK083993.  AH was supported by NSF Postdoctoral Fellowship Award
-\#0905961.
+commentary.
+%This work was supported in part by the USDA (AFRI
+%Competitive Grant 2010-65205-20361), NSF (DBI-0939454 and
+%IOS-0923812), as well as the DOE Great Lakes Bioenergy Research Center
+%(DOE BER DE-FC02-07ER64494), MSU AgBio Research, and NIH grant UH3
+%DK083993.  AH was supported by NSF Postdoctoral Fellowship Award
+%\#0905961.
 
-\end{acknowledgments}
+%\section*{References}
+% The bibtex filename
+\bibliography{diginorm}
 
-%\bibliographystyle{plos2009}
-%\bibliography{diginorm}
+\section*{Figure Legends}
 
-\begin{thebibliography}{20}
-
-\bibitem{pubmed19997069}
-M.~Metzker.
-\newblock Sequencing technologies - the next generation.
-\newblock {\em Nat Rev Genet}, 11(1):31--46, 2010.
-
-\bibitem{pubmed20211242}
-J.~Miller, S.~Koren, and G.~Sutton.
-\newblock Assembly algorithms for next-generation sequencing data.
-\newblock {\em Genomics}, 95(6):315--27, 2010.
-
-\bibitem{pubmed21187386}
-S.~Gnerre, I.~Maccallum, D.~Przybylski, F.~Ribeiro, J.~Burton, B.~Walker,
-  T.~Sharpe, G.~Hall, T.~Shea, S.~Sykes, A.~Berlin, D.~Aird, M.~Costello,
-  R.~Daza, L.~Williams, R.~Nicol, A.~Gnirke, C.~Nusbaum, E.~Lander, and
-  D.~Jaffe.
-\newblock High-quality draft assemblies of mammalian genomes from massively
-  parallel sequence data.
-\newblock {\em Proc Natl Acad Sci U S A}, 108(4):1513--8, 2011.
-
-\bibitem{pubmed21245053}
-T.~Conway and A.~Bromage.
-\newblock Succinct data structures for assembling large genomes.
-\newblock {\em Bioinformatics}, 27(4):479--86, 2011.
-
-\bibitem{pubmed21867570}
-A.~Sboner, X.~Mu, D.~Greenbaum, R.~Auerbach, and M.~Gerstein.
-\newblock The real cost of sequencing: higher than you think!
-\newblock {\em Genome Biol}, 12(8):125, 2011.
-
-\bibitem{pubmed20441614}
-L.~Stein.
-\newblock The case for cloud computing in genome informatics.
-\newblock {\em Genome Biol}, 11(5):207, 2010.
-
-\bibitem{pubmed19430453}
-C.~Trapnell and S.~Salzberg.
-\newblock How to map billions of short reads onto genomes.
-\newblock {\em Nat Biotechnol}, 27(5):455--7, 2009.
-
-\bibitem{pubmed19251739}
-Simpson J, Wong K, Jackman S, Schein J, Jones S, et~al. (2009)
-\newblock Abyss: a parallel assembler for short read sequence data.
-\newblock Genome Res 19: 1117-23.
-
-\bibitem{pubmed18349386}
-D.~Zerbino and E.~Birney.
-\newblock Velvet: algorithms for de novo short read assembly using de bruijn
-  graphs.
-\newblock {\em Genome Res}, 18(5):821--9, 2008.
-
-\bibitem{pubmed20511140}
-Y.~Li, Y.~Hu, L.~Bolund, J.~Wang (2010)
-\newblock State of the art de novo assembly of human genomes from massively parallel sequencing data.
-\newblock Hum Genomics 4: 271-7.
-
-\bibitem{pubmed22156294}
-J.~Simpson and R.~Durbin.
-\newblock Efficient de novo assembly of large genomes using compressed data
-  structures.
-\newblock {\em Genome Res}, 22(3):549--56, 2012.
-
-\bibitem{cortex} Iqbal~Z, Caccamo~M, Turner~I, Flicek~P, McVean~G (2012).  {\it De novo} assembly and genotyping of variants using
-colored de Bruijn graphs.  {\it Nat Genetics}, 44(2):22632.
-
-\bibitem{pubmed22068540}
-P.~Compeau, P.~Pevzner, and G.~Tesler.
-\newblock How to apply de bruijn graphs to genome assembly.
-\newblock {\em Nat Biotechnol}, 29(11):987--91, 2011.
-
-\bibitem{pubmed20529929}
-J.~Simpson and R.~Durbin.
-\newblock Efficient construction of an assembly string graph using the
-  fm-index.
-\newblock {\em Bioinformatics}, 26(12):i367--73, 2010.
-
-\bibitem{pubmed21572440}
-M.~Grabherr, B.~Haas, M.~Yassour, J.~Levin, D.~Thompson, I.~Amit, X.~Adiconis,
-  L.~Fan, R.~Raychowdhury, Q.~Zeng, Z.~Chen, E.~Mauceli, N.~Hacohen, A.~Gnirke,
-  N.~Rhind, F.~di~Palma, B.~Birren, C.~Nusbaum, K.~Lindblad-Toh, N.~Friedman,
-  and A.~Regev.
-\newblock Full-length transcriptome assembly from rna-seq data without a
-  reference genome.
-\newblock {\em Nat Biotechnol}, 29(7):644--52, 2011.
-
-\bibitem{pubmed22368243}
-M.~Schulz, D.~Zerbino, M.~Vingron, and E.~Birney.
-\newblock Oases: Robust de novo rna-seq assembly across the dynamic range of
-  expression levels.
-\newblock {\em Bioinformatics}, 2012.
-
-\bibitem{metavelvet}
-T.~Namiki, T.~Hachiya, H.~Tanaka, and Y.~Sakakibara.
-\newblock {M}eta{V}elvet: {A}n extension of {V}elvet assembler to de novo
-  metagenome assembly from short sequence reads.
-\newblock {\em ACM Conference on Bioinformatics, Computational Biology and
-  Biomedicine}, 2011.
-
-\bibitem{pubmed21685107}
-Y.~Peng, H.~Leung, S.~Yiu, and F.~Chin.
-\newblock Meta-idba: a de novo assembler for metagenomic data.
-\newblock {\em Bioinformatics}, 27(13):i94--101, 2011.
-
-\bibitem{pubmed21926975}
-H.~Chitsaz, J.~Yee-Greenbaum, G.~Tesler, M.~Lombardo, C.~Dupont, J.~Badger,
-  M.~Novotny, D.~Rusch, L.~Fraser, N.~Gormley, O.~Schulz-Trieglaff, G.~Smith,
-  D.~Evers, P.~Pevzner, and R.~Lasken.
-\newblock Efficient de novo assembly of single-cell bacterial genomes from
-  short-read data sets.
-\newblock {\em Nat Biotechnol}, 29(10):915--21, 2011.
-
-\bibitem{pubmed19724646}
-Rodrigue S, Malmstrom R, Berlin A, Birren B, Henn M, et~al. (2009) Whole genome
-  amplification and de novo assembly of single bacterial cells.
-\newblock PLoS One 4: e6864.
-
-\bibitem{pubmed22028825}
-Woyke T, Sczyrba A, Lee J, Rinke C, Tighe D, et~al. (2011) Decontamination of
-  mda reagents for single cell whole genome amplification.
-\newblock PLoS One 6: e26161.
-
-\bibitem{pubmed21685062}
-P.~Medvedev, E.~Scott, B.~Kakaradov, and P.~Pevzner.
-\newblock Error correction of high-throughput sequencing datasets with
-  non-uniform coverage.
-\newblock {\em Bioinformatics}, 27(13):i137--41, 2011.
-
-\bibitem{pubmed15059830}
-M.~Chaisson, P.~Pevzner, and H.~Tang.
-\newblock Fragment assembly with short reads.
-\newblock {\em Bioinformatics}, 20(13):2067--74, 2004.
-
-\bibitem{pubmed21114842}
-D.~Kelley, M.~Schatz, and S.~Salzberg.
-\newblock Quake: quality-aware detection and correction of sequencing errors.
-\newblock {\em Genome Biol}, 11(11):R116, 2010.
-
-\bibitem{pubmed8889548}
-M.~Bonaldo, G.~Lennon, and M.~Soares.
-\newblock Normalization and subtraction: two approaches to facilitate gene
-  discovery.
-\newblock {\em Genome Res}, 6(9):791--806, 1996.
-
-\bibitem{pubmed7937745}
-M.~Soares, M.~Bonaldo, P.~Jelene, L.~Su, L.~Lawton, and A.~Efstratiadis.
-\newblock Construction and characterization of a normalized cdna library.
-\newblock {\em Proc Natl Acad Sci U S A}, 91(20):9228--32, 1994.
-
-\bibitem{countminsketch}
-G.~Cormode and S.~Muthukrishnan.
-\newblock {A}n improved data stream summary: the count-min sketch, and its
-  applications.
-\newblock {\em Journal of Algorithms}, 2004.
-
-\bibitem{pubmed17487184}
-Spits C, Caignec CL, Rycke MD, Haute LV, Steirteghem AV, et~al. (2006)
-  Whole-genome multiple displacement amplification from single cells.
-\newblock Nat Protoc 1: 1965-70.
-
-\bibitem{pubmed21151575}
-J.~Pickrell, A.~Pai, Y.~Gilad, and J.~Pritchard.
-\newblock Noisy splicing drives mrna isoform diversity in human cells.
-\newblock {\em PLoS Genet}, 6(12):e1001236, 2010.
-
-\bibitem{muthukrishnan2005data}
-S.~Muthukrishnan.
-\newblock {\em Data streams: algorithms and applications}.
-\newblock Foundations and trends in theoretical computer science. Now
-  Publishers, 2005.
-
-\bibitem{pubmed22139935}
-A.~Pinho, D.~Pratas, and S.~Garcia.
-\newblock Green: a tool for efficient compression of genome resequencing data.
-\newblock {\em Nucleic Acids Res}, 40(4):e27, 2012.
-
-\bibitem{pubmed18549302}
-H.~Do, K.~Choi, F.~Preparata, W.~Sung, and L.~Zhang.
-\newblock Spectrum-based de novo repeat detection in genomic sequences.
-\newblock {\em J Comput Biol}, 15(5):469--87, 2008.
-
-\bibitem{pubmed20633259}
-P.~Novak, P.~Neumann, and J.~Macas.
-\newblock Graph-based clustering and characterization of repetitive sequences
-  in next-generation sequencing data.
-\newblock {\em BMC Bioinformatics}, 11:378, 2010.
-
-\bibitem{pubmed18541131}
-W.~Gu, T.~Castoe, D.~Hedges, M.~Batzer, and D.~Pollock.
-\newblock Identification of repeat structure in large genomes using repeat
-  probability clouds.
-\newblock {\em Anal Biochem}, 380(1):77--83, 2008.
-
-\bibitem{pubmed19580519}
-N.~Nagarajan and M.~Pop.
-\newblock Parametric complexity of sequence assembly: theory and applications
-  to next generation sequencing.
-\newblock {\em J Comput Biol}, 16(7):897--908, 2009.
-
-\bibitem{pubmed21926123}
-S.~Koren, T.~Treangen, and M.~Pop.
-\newblock Bambus 2: scaffolding metagenomes.
-\newblock {\em Bioinformatics}, 27(21):2964--71, 2011.
-
-\bibitem{pubmed19261174}
-B.~Langmead, C.~Trapnell, M.~Pop, and S.~Salzberg.
-\newblock Ultrafast and memory-efficient alignment of short dna sequences to
-  the human genome.
-\newblock {\em Genome Biol}, 10(3):R25, 2009.
-
-\bibitem{ipython}
-F.~P\'erez and B.~E. Granger.
-\newblock {IP}ython: a {S}ystem for {I}nteractive {S}cientific {C}omputing.
-\newblock {\em {C}omput. {S}ci. {E}ng.}, 9(3):21--29, May 2007.
-
-%\bibitem{pubmed22419786}
-%M.~Burriesci, E.~Lehnert, and J.~Pringle.
-%\newblock Fulcrum: condensing redundant reads from high-throughput sequencing
-%  studies.
-%\newblock {\em Bioinformatics}, 2012.
-
-%\bibitem{pubmed22147368}
-%S.~Salzberg, A.~Phillippy, A.~Zimin, D.~Puiu, T.~Magoc, S.~Koren, T.~Treangen,
-%  M.~Schatz, A.~Delcher, M.~Roberts, G.~Marcais, M.~Pop, and J.~Yorke.
-%\newblock Gage: A critical evaluation of genome assemblies and assembly
-%  algorithms.
-%\newblock {\em Genome Res}, 22(3):557--67, 2012.
-
-%\bibitem{pubmed19357099}
-%M.~Schatz.
-%\newblock Cloudburst: highly sensitive read mapping with mapreduce.
-%\newblock {\em Bioinformatics}, 25(11):1363--9, 2009.
-
-\end{thebibliography}
-
-\end{article}
-
-\newpage
-
-\begin{figure}
-\centerline{\includegraphics[width=3in]{diginorm-ranks.pdf}}
+\begin{figure}[!ht]
+\centerline{\includegraphics[width=4in]{diginorm-ranks.pdf}}
 \caption{
 {\bf Representative rank-abundance distributions for 20-mers from 100-base reads with no errors,
 a read with a single substitution error, and a read with multiple
@@ -1301,36 +1103,84 @@ substitution errors.}}
 \label{fig:rankabund}
 \end{figure}
 
-\begin{figure}
-\centerline{\includegraphics[width=3in]{diginorm-coverage2-raw.pdf}}
-\centerline{\includegraphics[width=3in]{diginorm-coverage2-dn.pdf}}
+\begin{figure}[!ht]
+\begin{center}
+\centerline{\includegraphics[width=3in]{diginorm-sim-genome.pdf}}
+\centerline{\includegraphics[width=3in]{diginorm-ecoli-genome.pdf}}
+\end{center}
+\caption{
+{\bf Mapping and k-mer coverage measures correlate for simulated genome
+data and a real {\em E. coli} data set (5m reads).  Simulated data $r^2 = 0.79$; {\em
+E. coli} $r^2 = 0.80$.}
+}
+\label{fig:random}
+\end{figure}
+
+\begin{figure}[!ht]
+\begin{center}
+\centerline{\includegraphics[width=3in]{diginorm-sim-transcr.pdf}}
+\centerline{\includegraphics[width=3in]{diginorm-mouse-transcr.pdf}}
+\end{center}
+\caption{
+{\bf Mapping and k-mer coverage measures correlate for simulated transcriptome data as well as real mouse transcriptome data. Simulated data $r^2 = 0.93$;
+mouse transcriptome $r^2 = 0.90$.}
+}
+\label{fig:transcripts}
+\end{figure}
+
+\begin{figure}[!ht]
+\centerline{\includegraphics[width=4in]{diginorm-coverage2-raw.pdf}}
+\centerline{\includegraphics[width=4in]{diginorm-coverage2-dn.pdf}}
 \caption{
 {\bf Coverage distribution of three microbial genome samples, calculated
 from mapped reads (a) before and (b) after digital normalization (k=20, C=20).}}
 \label{fig:coverage}
 \end{figure}
 
-\begin{figure}
-\centerline{\includegraphics[width=3in]{diginorm-accumulation.pdf}}
+\begin{figure}[!ht]
+\centerline{\includegraphics[width=4in]{diginorm-accumulation.pdf}}
 \caption{
 {\bf Fraction of reads kept when normalizing the {\em E. coli} dataset to C=20 at k=20.}}
 \label{fig:accumulate}
 \end{figure}
 
-\begin{figure}
-\centerline{\includegraphics[width=3in]{diginorm-endbias.pdf}}
+\begin{figure}[!ht]
+\centerline{\includegraphics[width=4in]{diginorm-endbias.pdf}}
 \caption{
 {\bf K-mers at the ends of sequences are lost during digital normalization.}}
 \label{fig:endloss}
 \end{figure}
 
-\begin{figure}
-\centerline{\includegraphics[width=3in]{schematic.pdf}}
-\caption{}
-\label{fig:schematic}
-\end{figure}
+%\begin{figure}[!ht]
+%\centerline{\includegraphics[width=4in]{schematic.pdf}}
+%\caption{}
+%\label{fig:schematic}
+%\end{figure}
+
+%\begin{figure}[!ht]
+%\begin{center}
+%%\includegraphics[width=4in]{figure_name.2.eps}
+%\end{center}
+%\caption{
+%{\bf Bold the first sentence.}  Rest of figure 2  caption.  Caption 
+%should be left justified, as specified by the options to the caption 
+%package.
+%}
+%\label{Figure_label}
+%\end{figure}
+
 
 \section*{Tables}
+%\begin{table}[!ht]
+%\caption{
+%\bf{Table title}}
+%\begin{tabular}{|c|c|c|}
+%table information
+%\end{tabular}
+%\begin{flushleft}Table caption
+%\end{flushleft}
+%\label{tab:label}
+% \end{table}
 
 \begin{table}[!ht]
 \caption{
@@ -1443,35 +1293,5 @@ Mouse (Trinity) & 50,801 / 61,242 & 79.6 mb / 78.8mb & 23,760 / 24,994 & 65.7mb 
 \label{tab:dntrans0}
 \end{table}
 
-\setcounter{figure}{0}
-\makeatletter
-\renewcommand{\thefigure}{S\@arabic\c@figure}
-
-\begin{figure}[!ht]
-\begin{center}
-\centerline{\includegraphics[width=3in]{diginorm-sim-genome.pdf}}
-\centerline{\includegraphics[width=3in]{diginorm-ecoli-genome.pdf}}
-\end{center}
-\caption{
-{\bf Mapping and k-mer coverage measures correlate for simulated genome
-data and a real {\em E. coli} data set (5m reads).  Simulated data $r^2 = 0.79$; {\em
-E. coli} $r^2 = 0.80$.}
-}
-\label{fig:random}
-\end{figure}
-
-\begin{figure}[!ht]
-\begin{center}
-\centerline{\includegraphics[width=3in]{diginorm-sim-transcr.pdf}}
-\centerline{\includegraphics[width=3in]{diginorm-mouse-transcr.pdf}}
-\end{center}
-\caption{
-{\bf Mapping and k-mer coverage measures correlate for simulated transcriptome data as well as real mouse transcriptome data. Simulated data $r^2 = 0.93$;
-mouse transcriptome $r^2 = 0.90$.}
-}
-\label{fig:transcripts}
-\end{figure}
-
 \end{document}
 
-% Candes, E.J., & Wakin, M.B., An Introduction To Compressive Sampling, IEEE Signal Processing Magazine, V.21, March 2008 [3]

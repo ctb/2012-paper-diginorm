@@ -5,7 +5,7 @@ clean:
 
 diginorm.pdf: diginorm.tex diginorm.bib
 	pdflatex diginorm
-	#bibtex diginorm
+	bibtex diginorm
 	pdflatex diginorm
 	pdflatex diginorm
 
@@ -15,4 +15,4 @@ abstract.pdf: abstract.tex
 
 getcites:
 	python pubmed-getcites.py diginorm.aux > diginorm-auto.bib
-	cat manual.bib diginorm-auto.bib > diginorm.bib
+	#cat manual.bib diginorm-auto.bib > diginorm.bib
