@@ -22,7 +22,7 @@ for name, length in refs:
 for n, line in enumerate(infp):
    if n % 10000 == 0:
       print '...', n
-   _, orient, refname, pos, read = line.split()[:5]
+   _, orient, refname, pos, read = line.split('\t')[:5]
    pos = int(pos)
    readlen = len(read)
 
@@ -46,3 +46,5 @@ for k in refcov:
    totalsize += len(refcov[k])
 
 print 'average coverage:', totalcov / float(totalsize)
+
+print 'done', sys.argv[1:]
