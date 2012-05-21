@@ -15,4 +15,4 @@ abstract.pdf: abstract.tex
 
 getcites:
 	python pubmed-getcites.py diginorm.aux > diginorm-auto.bib
-	cat manual.bib diginorm-auto.bib > diginorm.bib
+	#cat manual.bib diginorm-auto.bib > diginorm.bib
