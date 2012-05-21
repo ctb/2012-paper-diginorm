@@ -1,12 +1,17 @@
 import sys
 import screed
+import gzip
 
 # arg 1 -- sequence file
 # arg 2 -- bowtie map file
 # arg 3 -- output dist file
 
 refs = [ (r.name, len(r.sequence)) for r in screed.open(sys.argv[1]) ]
-infp = open(sys.argv[2])
+
+if sys.argv[2].endswith('.gz'):
+   infp = gzip.open(sys.argv[2])
+else:
+   infp = open(sys.argv[2])
 outfp = open(sys.argv[3], 'w')
 
 refcov = {}
@@ -30,7 +35,7 @@ for name in refcov:
    for count in refcov[name]:
       dist[count] = dist.get(count, 0) + 1
 
-for i in range(0, max(dist.keys())):
+for i in range(0, max(dist.keys()) + 1):
    print >>outfp, i, dist.get(i, 0)
 
 
