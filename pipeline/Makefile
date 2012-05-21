@@ -270,5 +270,54 @@ transcript-reads.fa.keep.map:
 transcript-reads.fa.keep.map.cov: transcript-reads.fa.keep.map
 	python mapping-genome-cov-3.py transcripts.fa transcript-reads.fa.keep.map transcript-reads.fa.keep.map.cov
 
+bacteria_mda_lane1.fastq.bz2.keep: bacteria_mda_lane1.fastq.bz2
+	$(KHMER)/scripts/normalize-by-median.py -k 20 -N 4 -x 1.6e9 -C 20 bacteria_mda_lane1.fastq.bz2
+
+bacteria_mda_lane7.fastq.bz2.keep: bacteria_mda_lane7.fastq.bz2
+	$(KHMER)/scripts/normalize-by-median.py -k 20 -N 4 -x 1.6e9 -C 20 bacteria_mda_lane7.fastq.bz2
+
 ecoli_ref.fastq.bz2.keep: ecoli_ref.fastq.bz2
-	$(KHMER)/scripts/normalize-by-median.py -R ecoli_ref.report -k 20 -N 4 -x 2e9 -C 20 ecoli_ref.fastq.bz2
+	$(KHMER)/scripts/normalize-by-median.py -R ecoli_ref.report -k 20 -N 4 -x 1.6e9 -C 20 ecoli_ref.fastq.bz2
+
+
+sar324.1.ebwt: sar324_contigs_lane1.fa 
+	bowtie-build sar324_contigs_lane1.fa sar324
+
+staph.1.ebwt: staph-genome.fa
+	bowtie-build staph-genome.fa staph
+
+staph.rawreads.map.gz: staph.1.ebwt bacteria_mda_lane7.fastq.bz2
+	bunzip2 -c bacteria_mda_lane7.fastq.bz2 | bowtie -p 8 -q -a --best --strata staph - | gzip -9c > staph.rawreads.map.gz
+
+ecoli.rawreads.map.gz: ecoliMG1655.1.ebwt  ecoli_ref.fastq.bz2
+	bunzip2 -c ecoli_ref.fastq.bz2 | bowtie -p 8 -q -a --best --strata ecoliMG1655 - | gzip -9c > ecoli.rawreads.map.gz
+
+sar324.rawreads.map.gz: sar324.1.ebwt bacteria_mda_lane1.fastq.bz2
+	bunzip2 -c bacteria_mda_lane1.fastq.bz2 | bowtie -p 8 -q -a --best --strata sar324 - | gzip -9c > sar324.rawreads.map.gz
+
+staph.keep.rawreads.map.gz: staph.1.ebwt bacteria_mda_lane7.fastq.bz2.keep
+	cat bacteria_mda_lane7.fastq.bz2.keep | bowtie -p 8 -f -a --best --strata staph - | gzip -9c > staph.keep.rawreads.map.gz
+
+ecoli.keep.rawreads.map.gz: ecoliMG1655.1.ebwt  ecoli_ref.fastq.bz2.keep
+	cat ecoli_ref.fastq.bz2.keep | bowtie -p 8 -f -a --best --strata ecoliMG1655 - | gzip -9c > ecoli.keep.rawreads.map.gz
+
+sar324.keep.rawreads.map.gz: sar324.1.ebwt bacteria_mda_lane1.fastq.bz2.keep
+	cat bacteria_mda_lane1.fastq.bz2.keep | bowtie -p 8 -f -a --best --strata sar324 - | gzip -9c > sar324.keep.rawreads.map.gz
+
+ecoli.keep.rawreads.map.gz.cov:
+	python mapping-genome-cov-3.py ecoliMG1655.fa ecoli.keep.rawreads.map.gz ecoli.keep.rawreads.map.gz.cov
+
+sar324.keep.rawreads.map.gz.cov:
+	python mapping-genome-cov-3.py sar324_contigs_lane1.fa sar324.keep.rawreads.map.gz sar324.keep.rawreads.map.gz.cov
+
+staph.keep.rawreads.map.gz.cov:
+	python mapping-genome-cov-3.py staph-genome.fa staph.keep.rawreads.map.gz staph.keep.rawreads.map.gz.cov
+
+ecoli.rawreads.map.gz.cov:
+	python mapping-genome-cov-3.py ecoliMG1655.fa ecoli.rawreads.map.gz ecoli.rawreads.map.gz.cov
+
+sar324.rawreads.map.gz.cov:
+	python mapping-genome-cov-3.py sar324_contigs_lane1.fa sar324.rawreads.map.gz sar324.rawreads.map.gz.cov
+
+staph.rawreads.map.gz.cov:
+	python mapping-genome-cov-3.py staph-genome.fa staph.rawreads.map.gz staph.rawreads.map.gz.cov
