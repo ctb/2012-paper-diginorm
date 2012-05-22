@@ -25,7 +25,16 @@ all: genome-reads.fa.kh genome-reads.fa.keep \
 	mouse-5m.fq.keep.map.cov \
 	transcript-reads.fa.keep.map.cov \
 	endbias-genome.txt endbias-transcripts.txt \
-	read15.ranks
+	read15.ranks \
+	ecoli.rawreads.map.gz \
+	staph.rawreads.map.gz \
+	sar324.rawreads.map.gz \
+	ecoli.rawreads.map.gz.cov \
+	staph.rawreads.map.gz.cov \
+	sar324.rawreads.map.gz.cov \
+	ecoli.keep.rawreads.map.gz.cov \
+	staph.keep.rawreads.map.gz.cov \
+	sar324.keep.rawreads.map.gz.cov
 
 copydata:
 	rm -fr ../data/
@@ -304,20 +313,20 @@ ecoli.keep.rawreads.map.gz: ecoliMG1655.1.ebwt  ecoli_ref.fastq.bz2.keep
 sar324.keep.rawreads.map.gz: sar324.1.ebwt bacteria_mda_lane1.fastq.bz2.keep
 	cat bacteria_mda_lane1.fastq.bz2.keep | bowtie -p 8 -f -a --best --strata sar324 - | gzip -9c > sar324.keep.rawreads.map.gz
 
-ecoli.keep.rawreads.map.gz.cov:
+ecoli.keep.rawreads.map.gz.cov: ecoli.keep.rawreads.map.gz
 	python mapping-genome-cov-3.py ecoliMG1655.fa ecoli.keep.rawreads.map.gz ecoli.keep.rawreads.map.gz.cov
 
-sar324.keep.rawreads.map.gz.cov:
+sar324.keep.rawreads.map.gz.cov: sar324.keep.rawreads.map.gz
 	python mapping-genome-cov-3.py sar324_contigs_lane1.fa sar324.keep.rawreads.map.gz sar324.keep.rawreads.map.gz.cov
 
-staph.keep.rawreads.map.gz.cov:
+staph.keep.rawreads.map.gz.cov: staph.keep.rawreads.map.gz
 	python mapping-genome-cov-3.py staph-genome.fa staph.keep.rawreads.map.gz staph.keep.rawreads.map.gz.cov
 
-ecoli.rawreads.map.gz.cov:
+ecoli.rawreads.map.gz.cov: ecoli.rawreads.map.gz
 	python mapping-genome-cov-3.py ecoliMG1655.fa ecoli.rawreads.map.gz ecoli.rawreads.map.gz.cov
 
-sar324.rawreads.map.gz.cov:
+sar324.rawreads.map.gz.cov: sar324.rawreads.map.gz
 	python mapping-genome-cov-3.py sar324_contigs_lane1.fa sar324.rawreads.map.gz sar324.rawreads.map.gz.cov
 
-staph.rawreads.map.gz.cov:
+staph.rawreads.map.gz.cov: staph.rawreads.map.gz
 	python mapping-genome-cov-3.py staph-genome.fa staph.rawreads.map.gz staph.rawreads.map.gz.cov
