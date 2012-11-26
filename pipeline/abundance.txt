@@ -1,0 +1,15 @@
+python ~/khmer/scripts/abundance-dist.py -s -z transcript-reads.fa.kh transcript-reads.fa transcript-reads.fa.hist
+
+python ~/khmer/scripts/abundance-dist.py -s -z transcript-reads.fa.keep.kh transcript-reads.fa.keep transcript-reads.fa.keep.hist
+
+python ~/khmer/scripts/abundance-dist.py -s -z transcript-reads.fa.normalized_K25_C20_pctSD100.fa.kh transcript-reads.fa.normalized_K25_C20_pctSD100.fa transcript-reads.fa.normalized_K25_C20_pctSD100.fa.hist
+
+python ~/khmer/scripts/abundance-dist.py -s -z transcript-reads.fa.kh transcripts.fa transcripts.fa.hist
+
+python ~/khmer/scripts/abundance-dist.py -s -z transcript-reads.fa.keepmedpct.kh transcripts.fa transcripts.fa.keepmedpct.hist
+
+python ~/khmer/scripts/abundance-dist.py -s -z transcript-reads.fa.keepmedpct.kh transcript-reads.fa.keepmedpct transcript-reads.fa.keepmedpct.hist
+
+python ~/khmer/scripts/abundance-dist.py -s -z transcript-reads.fa.keep.kh transcripts.fa transcripts.fa.diginorm.hist
+
+python ~/khmer/scripts/abundance-dist.py -s -z transcript-reads.fa.normalized_K25_C20_pctSD100.fa.kh transcripts.fa transcripts.fa.trinnorm.hist

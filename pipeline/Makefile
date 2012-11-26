@@ -92,17 +92,26 @@ random.x.genome-reads.fa.keep.abundfilt.overlap: genome-reads.fa.keep.abundfilt
 random.x.genome-reads.fa.keep.abundfilt.keep.overlap: genome-reads.fa.keep.abundfilt.keep
 	python ${KHMER}/scripts/count-overlap.py -k 20 -N 4 -x 1e8 random.fa genome-reads.fa.keep.abundfilt.keep random.x.genome-reads.fa.keep.abundfilt.keep.overlap
 
+transcript-reads.fa.normalized_K25_C20_pctSD100.fa: transcript-reads.fa
+	~/trinityrnaseq_r2012-10-05/^Cil/normalize_by_kmer_coverage.pl --max_cov 20 --seqType fa --single transcript-reads.fa  --JM 5G
+
+transcript-reads.fa.normalized_K25_C20_pctSD100.fa.kh: transcript-reads.fa.normalized_K25_C20_pctSD100.fa
+	${KHMER}/scripts/load-into-counting.py -k 25 -N 4 -x 1e8 transcript-reads.fa.normalized_K25_C20_pctSD100.fa.kh transcript-reads.fa.normalized_K25_C20_pctSD100.fa
+
 transcript-reads.fa.kh: transcript-reads.fa
-	${KHMER}/scripts/load-into-counting.py -k 20 -N 4 -x 1e8 transcript-reads.fa.kh transcript-reads.fa
+	${KHMER}/scripts/load-into-counting.py -k 25 -N 4 -x 1e8 transcript-reads.fa.kh transcript-reads.fa
 
 transcript-reads.fa.keep: transcript-reads.fa
-	${KHMER}/scripts/normalize-by-median.py -k 20 -N 4 -x 1e8 -C 20 --savehash transcript-reads.fa.keep.kh transcript-reads.fa
+	${KHMER}/scripts/normalize-by-median.py -k 25 -N 4 -x 1e8 -C 20 --savehash transcript-reads.fa.keep.kh transcript-reads.fa
+
+transcript-reads.fa.keepmedpct: transcript-reads.fa
+	${KHMER}/sandbox/normalize-by-median-pct.py -k 25 -N 4 -x 1e8 -C 20 --savehash transcript-reads.fa.keepmedpct.kh transcript-reads.fa
 
 transcript-reads.fa.keep.abundfilt: transcript-reads.fa.keep
 	${KHMER}/scripts/filter-abund.py transcript-reads.fa.keep.kh transcript-reads.fa.keep
 
 transcript-reads.fa.keep.abundfilt.keep: transcript-reads.fa.keep.abundfilt
-	${KHMER}/scripts/normalize-by-median.py -k 20 -N 4 -x 1e8 -C 5 --savehash transcript-reads.fa.keep.abundfilt.keep.kh transcript-reads.fa.keep.abundfilt
+	${KHMER}/scripts/normalize-by-median.py -k 25 -N 4 -x 1e8 -C 5 --savehash transcript-reads.fa.keep.abundfilt.keep.kh transcript-reads.fa.keep.abundfilt
 
 transcript-reads.fa.keep.abundfilt.keep: transcript-reads.fa.keep.abundfilt
 
